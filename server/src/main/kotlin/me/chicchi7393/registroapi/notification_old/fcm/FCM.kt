@@ -1,27 +1,12 @@
-package me.chicchi7393.registroapi.notification.fcm
-
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.request.*
-import io.ktor.client.request.forms.*
-import io.ktor.http.*
-import kotlinx.serialization.json.JsonElement
-import me.chicchi7393.registroapi.notification.fcm.types.Keys
-import me.chicchi7393.registroapi.notification.fcm.types.RegisterResponse
-import java.security.KeyPairGenerator
-import java.security.spec.ECGenParameterSpec
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.random.Random
+package me.chicchi7393.registroapi.notification_old.fcm
 
 const val FCM_SUBSCRIBE = "https://fcm.googleapis.com/fcm/connect/subscribe"
 const val FCM_ENDPOINT = "https://fcm.googleapis.com/fcm/send"
-
+/*
 class FCM {
     suspend fun registerFcm(senderId: Int, token: String): RegisterResponse {
         val keys = createKeys()
-        val client = HttpClient(CIO)
+        val client = HttpClient(Curl)
         val response = client.get {
             url(FCM_SUBSCRIBE)
             method = HttpMethod.Post
@@ -61,4 +46,4 @@ class FCM {
             Base64.encode(Random.nextBytes(16))
         )
     }
-}
+}*/

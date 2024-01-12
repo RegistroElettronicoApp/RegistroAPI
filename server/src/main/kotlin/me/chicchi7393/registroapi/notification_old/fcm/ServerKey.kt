@@ -1,4 +1,4 @@
-package me.chicchi7393.registroapi.notification.fcm
+package me.chicchi7393.registroapi.notification_old.fcm
 
 object ServerKey {
     val KEY = listOf(
