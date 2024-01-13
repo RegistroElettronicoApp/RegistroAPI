@@ -9,16 +9,29 @@ group = "me.chicchi7393.registroapi"
 version = "1.0.0"
 application {
     mainClass.set("me.chicchi7393.registroapi.ApplicationKt")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=${extra["development"] ?: "false"}")
 }
 
 dependencies {
     implementation(libs.logback)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(libs.ktor.server.openapi)
+    implementation(libs.ktor.server.swagger)
+    implementation(libs.ktor.server.compression)
+    implementation(libs.ktor.server.default.headers)
+    implementation(libs.ktor.server.call.logging)
+    implementation(libs.ktor.server.caching.headers)
+    implementation(libs.ktor.server.auto.head.response)
+    implementation(libs.ktor.server.double.receive)
+    implementation(libs.ktor.server.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+    implementation(libs.ktor.server.sessions)
     implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.curl)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
+    implementation("org.jetbrains.exposed:exposed-core:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
+    implementation("com.h2database:h2:2.2.224")
 }
