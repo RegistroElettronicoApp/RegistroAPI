@@ -3,6 +3,7 @@ package me.chicchi7393.registroapi
 import kotlinx.coroutines.Dispatchers
 import me.chicchi7393.registroapi.Application.DEVELOPMENT_SERVER
 import me.chicchi7393.registroapi.models.AccessKeyTable
+import me.chicchi7393.registroapi.models.NotificationEntryTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -18,6 +19,7 @@ object DatabaseSingleton {
         )
         transaction(database) {
             SchemaUtils.create(AccessKeyTable)
+            SchemaUtils.create(NotificationEntryTable)
         }
     }
 

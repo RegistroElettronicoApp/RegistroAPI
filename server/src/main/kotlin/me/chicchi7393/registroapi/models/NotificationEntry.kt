@@ -4,22 +4,19 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
 @Serializable
-data class AccessKey(
+data class NotificationEntry(
     val id: Int? = null,
-    val schoolCode: String,
+    val deviceFcm: String,
     val username: String,
-    val password: String,
-    val reg: Int,
-    val shareCode: String
+    val serverFcm: String,
+    val reg: Int
 )
 
-object AccessKeyTable : Table() {
+object NotificationEntryTable : Table() {
     val id = integer("id").autoIncrement()
-    val schoolcode = varchar("schoolcode", 128)
+    val deviceFcm = varchar("devicefcm", 128)
     val username = varchar("username", 128)
-    val password = varchar("password", 128)
+    val serverFcm = varchar("serverfcm", 128)
     val reg = integer("reg")
-    val shareCode = varchar("code", 128)
     override val primaryKey = PrimaryKey(id)
 }
-

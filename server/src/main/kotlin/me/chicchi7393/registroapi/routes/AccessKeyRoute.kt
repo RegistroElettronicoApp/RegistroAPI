@@ -7,12 +7,12 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.chicchi7393.registroapi.dao.DAOKeyFacadeImpl
+import me.chicchi7393.registroapi.dao.DAOKey
 import me.chicchi7393.registroapi.models.AccessKey
 
 fun Routing.accessKeyRoute() {
     route("/accessKey") {
-        val daoKey = DAOKeyFacadeImpl()
+        val daoKey = DAOKey()
         get({
             description = "Get an access key's creds"
             request {
