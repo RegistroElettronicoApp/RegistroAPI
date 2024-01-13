@@ -7,6 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.defaultheaders.*
+import me.chicchi7393.registroapi.Application.DEVELOPMENT_SERVER
 
 fun Application.configureHTTP() {
     install(CachingHeaders) {
@@ -40,7 +41,7 @@ fun Application.configureHTTP() {
             description = "API per varie robe backend per l'app registro elettronico (notifiche e altro)"
         }
         server {
-            url = "http://localhost:4473"
+            url = "https://regapi${if (DEVELOPMENT_SERVER) "-dev" else ""}.chicchi7393.xyz"
             description = "REST Server"
         }
     }

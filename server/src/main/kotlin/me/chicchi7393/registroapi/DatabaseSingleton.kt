@@ -1,6 +1,7 @@
 package me.chicchi7393.registroapi
 
 import kotlinx.coroutines.Dispatchers
+import me.chicchi7393.registroapi.Application.DEVELOPMENT_SERVER
 import me.chicchi7393.registroapi.models.AccessKeyTable
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -10,7 +11,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object DatabaseSingleton {
     fun init() {
         val database = Database.connect(
-            url = "jdbc:h2:file:./build/db;DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE",
+            url = "jdbc:h2:file:./build/${if (DEVELOPMENT_SERVER) "dev_db" else "db"};DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE",
             user = "root",
             driver = "org.h2.Driver",
             password = ""

@@ -5,7 +5,9 @@ import io.ktor.server.netty.*
 import me.chicchi7393.registroapi.plugins.*
 
 object Application {
-    private val embeddedServer = embeddedServer(Netty, port = 4473, host = "0.0.0.0", module = {
+    const val DEVELOPMENT_SERVER = true
+    private val embeddedServer =
+        embeddedServer(Netty, port = if (DEVELOPMENT_SERVER) 4473 else 4474, host = "0.0.0.0", module = {
         configureSecurity()
         configureHTTP()
         configureMonitoring()
