@@ -15,7 +15,7 @@ dependencies {
     implementation(libs.logback)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
-    implementation(libs.ktor.server.openapi)
+    implementation("io.github.smiley4:ktor-swagger-ui:2.7.4")
     implementation(libs.ktor.server.swagger)
     implementation(libs.ktor.server.compression)
     implementation(libs.ktor.server.default.headers)

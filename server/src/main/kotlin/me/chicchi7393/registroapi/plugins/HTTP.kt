@@ -1,14 +1,12 @@
 package me.chicchi7393.registroapi.plugins
 
+import io.github.smiley4.ktorswaggerui.SwaggerUI
 import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.defaultheaders.*
-import io.ktor.server.plugins.openapi.*
-import io.ktor.server.plugins.swagger.*
-import io.ktor.server.routing.*
 
 fun Application.configureHTTP() {
     install(CachingHeaders) {
@@ -31,10 +29,19 @@ fun Application.configureHTTP() {
     install(DefaultHeaders) {
         header("X-Engine", "Ktor") // will send this header with each response
     }
-    routing {
-        openAPI(path = "openapi")
-    }
-    routing {
-        swaggerUI(path = "openapi")
+    install(SwaggerUI) {
+        swagger {
+            swaggerUrl = "swagger-ui"
+            forwardRoot = true
+        }
+        info {
+            title = "Registro API"
+            version = "latest"
+            description = "API per varie robe backend per l'app registro elettronico (notifiche e altro)"
+        }
+        server {
+            url = "http://localhost:4473"
+            description = "REST Server"
+        }
     }
 }
