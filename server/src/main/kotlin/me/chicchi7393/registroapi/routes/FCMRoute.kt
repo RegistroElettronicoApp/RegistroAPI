@@ -2,7 +2,7 @@ package me.chicchi7393.registroapi.routes
 
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.patch
-import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -17,7 +17,7 @@ fun Routing.fcmRoute() {
     route("/requestFcm") {
         val daoNotif = DAONotifications()
 
-        post({
+        put({
             description = "Request a notification token to register with the school registry"
             request {
                 body<NotificationEntry> {}

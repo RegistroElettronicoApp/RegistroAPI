@@ -16,12 +16,12 @@ fun Routing.accessKeyRoute() {
         get({
             description = "Get an access key's creds"
             request {
-                pathParameter<String>("shareCode") {
+                queryParameter<String>("shareCode") {
                     description = "your share code"
                 }
             }
             response {
-                HttpStatusCode.Found to {
+                HttpStatusCode.OK to {
                     description = "Found creds"
                     body<AccessKey> { description = "the creds associated to the code" }
                 }
@@ -43,7 +43,7 @@ fun Routing.accessKeyRoute() {
                     "Not Found",
                     status = HttpStatusCode.NotFound
                 ) else {
-                    call.respond(HttpStatusCode.Found, keyValue)
+                    call.respond(HttpStatusCode.OK, keyValue)
                 }
             }
         }
