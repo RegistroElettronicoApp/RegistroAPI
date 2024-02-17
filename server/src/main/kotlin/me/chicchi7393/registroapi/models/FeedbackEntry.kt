@@ -6,11 +6,11 @@ import org.jetbrains.exposed.sql.Table
 @Serializable
 data class FeedbackEntry(
     val id: Int? = null,
-    val deviceFcm: String,
-    val secret: String,
-    val name: String,
-    val description: String,
-    val reply: String
+    val deviceFcm: String = "",
+    val secret: String = "",
+    val name: String = "",
+    val description: String = "",
+    val reply: String = ""
 )
 
 object FeedbackEntryTable : Table() {
