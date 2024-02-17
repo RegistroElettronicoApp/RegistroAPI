@@ -36,4 +36,5 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
     implementation("com.h2database:h2:2.2.224")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
+    implementation("io.ktor:ktor-client-jetty:2.3.7")
 }
