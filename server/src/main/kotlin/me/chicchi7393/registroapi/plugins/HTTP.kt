@@ -33,7 +33,7 @@ fun Application.configureHTTP() {
     install(SwaggerUI) {
         swagger {
             swaggerUrl = "swagger-ui"
-            forwardRoot = true
+            forwardRoot = false
         }
         info {
             title = "Registro API"
