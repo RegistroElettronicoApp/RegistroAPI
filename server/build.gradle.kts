@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.server.sessions)
     implementation(libs.ktor.client.core)
+    implementation("io.ktor:ktor-server-auth:2.3.7")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.kotlin.test.junit)
@@ -34,4 +35,5 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.41.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.41.1")
     implementation("com.h2database:h2:2.2.224")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
 }
