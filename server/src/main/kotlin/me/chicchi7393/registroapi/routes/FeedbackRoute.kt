@@ -2,11 +2,13 @@ package me.chicchi7393.registroapi.routes
 
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.put
+import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import me.chicchi7393.registroapi.Application
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.models.FeedbackDeletePayload
 import me.chicchi7393.registroapi.models.FeedbackEntry
@@ -42,6 +44,20 @@ fun Routing.feedbackRoute() {
                     "Unable to create feedback",
                     status = HttpStatusCode.BadRequest
                 ) else {
+                    Application.client.submitForm(
+                        "https://api.telegram.org/bot${Application.dotenv["TG_BOT"]}/sendMessage",
+                        parameters {
+                            append("chat_id", Application.dotenv["TG_GROUP"])
+                            append(
+                                "text", """
+                                **Nuovo feedback!**
+                                **Da:** ${feedbackEntry.name}
+                                **Messaggio:** ${feedbackEntry.description}
+                                **ID:** ${result.id}
+                            """.trimIndent()
+                            )
+                        }
+                    )
                     call.respond(HttpStatusCode.Created, result)
                 }
             } catch (e: Exception) {
