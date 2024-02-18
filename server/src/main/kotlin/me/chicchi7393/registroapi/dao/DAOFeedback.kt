@@ -30,6 +30,12 @@ class DAOFeedback {
             .map(::resultRowToFeedback)
             .singleOrNull()
     }
+    suspend fun feedbackById(id: Int) = dbQuery {
+        FeedbackEntryTable
+            .select { FeedbackEntryTable.id eq id }
+            .map(::resultRowToFeedback)
+            .singleOrNull()
+    }
 
     suspend fun addFeedback(
         deviceFcm: String,

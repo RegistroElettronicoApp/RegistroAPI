@@ -1,5 +1,6 @@
 package me.chicchi7393.registroapi
 
+import com.google.firebase.FirebaseApp
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import io.ktor.client.*
@@ -32,9 +33,9 @@ object Application {
             "resources/templates"
         )
         )
-
     @JvmStatic
     fun main(args: Array<String>) {
+        FirebaseApp.initializeApp()
         embeddedServer.start(true)
     }
 }

@@ -1,5 +1,6 @@
 package me.chicchi7393.registroapi.routes
 
+import com.google.firebase.messaging.*
 import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.patch
@@ -164,10 +165,35 @@ fun Routing.feedbackRoute() {
                 try {
                     val feedbackReplyEntry = call.receive<FeedbackReplyPayload>()
                     val result = daoFeedback.replyFeedback(feedbackReplyEntry.id, feedbackReplyEntry.reply)
-                    if (!result) call.respondText(
+                    val feedbackEntry = daoFeedback.feedbackById(feedbackReplyEntry.id)
+                    if (!result && feedbackEntry == null) call.respondText(
                         "No feedback found",
                         status = HttpStatusCode.NotFound
                     ) else {
+                        FirebaseMessaging.getInstance().send(
+                            Message.builder()
+                                .setToken(feedbackEntry?.deviceFcm)
+                                .setTopic("FEEDBACK_REPLY")
+                                .setNotification(
+                                    Notification.builder()
+                                        .setTitle("Nuova risposta al tuo feedback")
+                                        .setBody("Il tuo feedback ha ricevuto una risposta")
+                                        .build()
+                                )
+                                .setAndroidConfig(
+                                    AndroidConfig.builder()
+                                        .putData("feedbackSecret", feedbackEntry?.secret)
+                                        .setNotification(
+                                            AndroidNotification.builder()
+                                                .setTitle("Nuova risposta al tuo feedback")
+                                                .setBody("Il tuo feedback ha ricevuto una risposta")
+                                                .build()
+                                        )
+                                        .setPriority(AndroidConfig.Priority.HIGH)
+                                        .build()
+                                )
+                                .build()
+                        )
                         call.respond(HttpStatusCode.OK)
                     }
                 } catch (e: Exception) {
