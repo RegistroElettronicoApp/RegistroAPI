@@ -213,7 +213,7 @@ fun Routing.feedbackRoute() {
                     }
                 }
             }) {
-                val result = daoFeedback.deleteAllFeedback()
+                daoFeedback.deleteAllFeedback()
                 call.respond(HttpStatusCode.OK)
             }
         }

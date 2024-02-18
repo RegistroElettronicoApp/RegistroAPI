@@ -16,3 +16,4 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 server/src/main/resources/.env
+server/src/main/resources/firebase-service-acc.json
