@@ -19,7 +19,7 @@ data class FeedbackEntry(
 object FeedbackEntryTable : Table() {
     val id = integer("id").autoIncrement()
     val secret = varchar("secret", 64)
-    val deviceFcm = varchar("devicefcm", 128)
+    val deviceFcm = varchar("devicefcm", 256)
     val name = varchar("name", 128)
     val description = varchar("description", 2000)
     val reply = varchar("reply", 2000)

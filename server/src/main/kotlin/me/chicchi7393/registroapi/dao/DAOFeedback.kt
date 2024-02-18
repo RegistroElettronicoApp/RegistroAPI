@@ -30,6 +30,11 @@ class DAOFeedback {
             .map(::resultRowToFeedback)
             .singleOrNull()
     }
+    suspend fun feedbacks(secrets: List<String>) = dbQuery {
+        FeedbackEntryTable
+            .select { FeedbackEntryTable.secret inList secrets }
+            .map(::resultRowToFeedback)
+    }
     suspend fun feedbackById(id: Int) = dbQuery {
         FeedbackEntryTable
             .select { FeedbackEntryTable.id eq id }

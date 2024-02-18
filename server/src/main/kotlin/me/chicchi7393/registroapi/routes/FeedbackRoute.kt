@@ -1,10 +1,7 @@
 package me.chicchi7393.registroapi.routes
 
 import com.google.firebase.messaging.*
-import io.github.smiley4.ktorswaggerui.dsl.delete
-import io.github.smiley4.ktorswaggerui.dsl.get
-import io.github.smiley4.ktorswaggerui.dsl.patch
-import io.github.smiley4.ktorswaggerui.dsl.put
+import io.github.smiley4.ktorswaggerui.dsl.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -16,10 +13,7 @@ import io.ktor.server.routing.*
 import io.ktor.util.*
 import me.chicchi7393.registroapi.Application
 import me.chicchi7393.registroapi.dao.DAOFeedback
-import me.chicchi7393.registroapi.models.FeedbackDeletePayload
-import me.chicchi7393.registroapi.models.FeedbackEntry
-import me.chicchi7393.registroapi.models.FeedbackGetPayload
-import me.chicchi7393.registroapi.models.FeedbackReplyPayload
+import me.chicchi7393.registroapi.models.*
 
 fun Routing.feedbackRoute() {
     val daoFeedback = DAOFeedback()
@@ -109,7 +103,7 @@ fun Routing.feedbackRoute() {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
             }
         }
-        get({
+        head({
             description = "Gets a feedback"
             request {
                 body<FeedbackGetPayload> {}
@@ -133,6 +127,39 @@ fun Routing.feedbackRoute() {
                 val feedbackGetEntry = call.receive<FeedbackGetPayload>()
                 val result = daoFeedback.feedback(feedbackGetEntry.secret)
                 if (result == null) call.respondText(
+                    "No feedback found",
+                    status = HttpStatusCode.NotFound
+                ) else {
+                    call.respond(HttpStatusCode.OK, result)
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
+            }
+        }
+        get({
+            description = "Gets a list of feedbacks"
+            request {
+                body<FeedbackGetListPayload> {}
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Feedback found"
+                    body<List<FeedbackEntry>>()
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Feedback with given secret not found"
+                    body<String>()
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Internal server errors"
+                    body<String>()
+                }
+            }
+        }) {
+            try {
+                val feedbackGetEntry = call.receive<FeedbackGetListPayload>()
+                val result = daoFeedback.feedbacks(feedbackGetEntry.secrets)
+                if (result.isEmpty()) call.respondText(
                     "No feedback found",
                     status = HttpStatusCode.NotFound
                 ) else {
@@ -173,7 +200,6 @@ fun Routing.feedbackRoute() {
                         FirebaseMessaging.getInstance().send(
                             Message.builder()
                                 .setToken(feedbackEntry?.deviceFcm)
-                                .setTopic("FEEDBACK_REPLY")
                                 .setNotification(
                                     Notification.builder()
                                         .setTitle("Nuova risposta al tuo feedback")
