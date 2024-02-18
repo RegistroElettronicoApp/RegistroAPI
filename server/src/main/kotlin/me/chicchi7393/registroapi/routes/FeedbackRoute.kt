@@ -1,11 +1,13 @@
 package me.chicchi7393.registroapi.routes
 
 import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.dsl.patch
 import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,6 +16,7 @@ import me.chicchi7393.registroapi.Application
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.models.FeedbackDeletePayload
 import me.chicchi7393.registroapi.models.FeedbackEntry
+import me.chicchi7393.registroapi.models.FeedbackReplyPayload
 
 fun Routing.feedbackRoute() {
     route("/feedback") {
@@ -101,6 +104,40 @@ fun Routing.feedbackRoute() {
                 }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
+            }
+        }
+        authenticate("auth-basic") {
+            patch({
+                description = "Replies to a feedback"
+                request {
+                    body<FeedbackReplyPayload> {}
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Feedback replied"
+                    }
+                    HttpStatusCode.NotFound to {
+                        description = "Feedback with given id not found"
+                        body<String>()
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Internal server errors"
+                        body<String>()
+                    }
+                }
+            }) {
+                try {
+                    val feedbackReplyEntry = call.receive<FeedbackReplyPayload>()
+                    val result = daoFeedback.replyFeedback(feedbackReplyEntry.id, feedbackReplyEntry.reply)
+                    if (!result) call.respondText(
+                        "No feedback found",
+                        status = HttpStatusCode.NotFound
+                    ) else {
+                        call.respond(HttpStatusCode.OK)
+                    }
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
+                }
             }
         }
     }

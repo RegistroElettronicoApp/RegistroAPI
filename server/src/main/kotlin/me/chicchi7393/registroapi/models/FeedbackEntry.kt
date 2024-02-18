@@ -2,6 +2,8 @@ package me.chicchi7393.registroapi.models
 
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.javatime.CurrentDateTime
+import org.jetbrains.exposed.sql.javatime.datetime
 
 @Serializable
 data class FeedbackEntry(
@@ -10,7 +12,8 @@ data class FeedbackEntry(
     val secret: String = "",
     val name: String = "",
     val description: String = "",
-    val reply: String = ""
+    val reply: String = "",
+    val date: Long = 0L
 )
 
 object FeedbackEntryTable : Table() {
@@ -20,5 +23,6 @@ object FeedbackEntryTable : Table() {
     val name = varchar("name", 128)
     val description = varchar("description", 2000)
     val reply = varchar("reply", 2000)
+    val date = datetime("date").defaultExpression(CurrentDateTime)
     override val primaryKey = PrimaryKey(id)
 }

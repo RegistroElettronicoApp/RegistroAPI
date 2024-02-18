@@ -5,6 +5,8 @@ import me.chicchi7393.registroapi.models.FeedbackEntry
 import me.chicchi7393.registroapi.models.FeedbackEntryTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 
 class DAOFeedback {
@@ -14,7 +16,8 @@ class DAOFeedback {
         secret = row[FeedbackEntryTable.secret],
         name = row[FeedbackEntryTable.name],
         description = row[FeedbackEntryTable.description],
-        reply = row[FeedbackEntryTable.reply]
+        reply = row[FeedbackEntryTable.reply],
+        date = row[FeedbackEntryTable.date].atZone(ZoneId.systemDefault()).toEpochSecond()
     )
 
     suspend fun allFeedbacks() = dbQuery {
@@ -39,6 +42,7 @@ class DAOFeedback {
             it[FeedbackEntryTable.name] = name
             it[FeedbackEntryTable.description] = description
             it[reply] = ""
+            it[date] = LocalDateTime.now()
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToFeedback)
     }
