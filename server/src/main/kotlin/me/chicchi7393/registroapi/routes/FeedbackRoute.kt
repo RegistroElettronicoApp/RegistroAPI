@@ -1,7 +1,10 @@
 package me.chicchi7393.registroapi.routes
 
 import com.google.firebase.messaging.*
-import io.github.smiley4.ktorswaggerui.dsl.*
+import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.dsl.patch
+import io.github.smiley4.ktorswaggerui.dsl.post
+import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -103,72 +106,6 @@ fun Routing.feedbackRoute() {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
             }
         }
-        head({
-            description = "Gets a feedback"
-            request {
-                body<FeedbackGetPayload> {}
-            }
-            response {
-                HttpStatusCode.OK to {
-                    description = "Feedback found"
-                    body<FeedbackEntry>()
-                }
-                HttpStatusCode.NotFound to {
-                    description = "Feedback with given secret not found"
-                    body<String>()
-                }
-                HttpStatusCode.InternalServerError to {
-                    description = "Internal server errors"
-                    body<String>()
-                }
-            }
-        }) {
-            try {
-                val feedbackGetEntry = call.receive<FeedbackGetPayload>()
-                val result = daoFeedback.feedback(feedbackGetEntry.secret)
-                if (result == null) call.respondText(
-                    "No feedback found",
-                    status = HttpStatusCode.NotFound
-                ) else {
-                    call.respond(HttpStatusCode.OK, result)
-                }
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
-            }
-        }
-        get({
-            description = "Gets a list of feedbacks"
-            request {
-                body<FeedbackGetListPayload> {}
-            }
-            response {
-                HttpStatusCode.OK to {
-                    description = "Feedback found"
-                    body<List<FeedbackEntry>>()
-                }
-                HttpStatusCode.NotFound to {
-                    description = "Feedback with given secret not found"
-                    body<List<FeedbackEntry>>()
-                }
-                HttpStatusCode.InternalServerError to {
-                    description = "Internal server errors"
-                    body<String>()
-                }
-            }
-        }) {
-            try {
-                val feedbackGetEntry = call.receive<FeedbackGetListPayload>()
-                val result = daoFeedback.feedbacks(feedbackGetEntry.secrets)
-                if (result.isEmpty()) call.respond(
-                    HttpStatusCode.NotFound,
-                    listOf<FeedbackEntry>()
-                ) else {
-                    call.respond(HttpStatusCode.OK, result)
-                }
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
-            }
-        }
         authenticate("auth-basic") {
             patch({
                 description = "Replies to a feedback"
@@ -227,6 +164,77 @@ fun Routing.feedbackRoute() {
                 }
             }
         }
+    }
+    route("/getFeedback") {
+        post({
+            description = "Gets a feedback"
+            request {
+                body<FeedbackGetPayload> {}
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Feedback found"
+                    body<FeedbackEntry>()
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Feedback with given secret not found"
+                    body<String>()
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Internal server errors"
+                    body<String>()
+                }
+            }
+        }) {
+            try {
+                val feedbackGetEntry = call.receive<FeedbackGetPayload>()
+                val result = daoFeedback.feedback(feedbackGetEntry.secret)
+                if (result == null) call.respondText(
+                    "No feedback found",
+                    status = HttpStatusCode.NotFound
+                ) else {
+                    call.respond(HttpStatusCode.OK, result)
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
+            }
+        }
+    }
+    route("/getFeedbacks") {
+        post({
+            description = "Gets a list of feedbacks"
+            request {
+                body<FeedbackGetListPayload> {}
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Feedback found"
+                    body<List<FeedbackEntry>>()
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Feedback with given secret not found"
+                    body<List<FeedbackEntry>>()
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Internal server errors"
+                    body<String>()
+                }
+            }
+        }) {
+            try {
+                val feedbackGetEntry = call.receive<FeedbackGetListPayload>()
+                val result = daoFeedback.feedbacks(feedbackGetEntry.secrets)
+                if (result.isEmpty()) call.respond(
+                    HttpStatusCode.NotFound,
+                    listOf<FeedbackEntry>()
+                ) else {
+                    call.respond(HttpStatusCode.OK, result)
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
+            }
+        }
+
     }
     route("deleteAllFeedback") {
         authenticate("auth-basic") {
