@@ -59,4 +59,7 @@ class DAOFeedback {
     suspend fun deleteFeedback(secret: String) = dbQuery {
         FeedbackEntryTable.deleteWhere { FeedbackEntryTable.secret eq secret } > 0
     }
+    suspend fun deleteAllFeedback() = dbQuery {
+        FeedbackEntryTable.deleteAll()
+    }
 }

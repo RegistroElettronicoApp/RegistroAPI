@@ -1,6 +1,7 @@
 package me.chicchi7393.registroapi.routes
 
 import io.github.smiley4.ktorswaggerui.dsl.delete
+import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.patch
 import io.github.smiley4.ktorswaggerui.dsl.put
 import io.ktor.client.request.forms.*
@@ -16,12 +17,13 @@ import me.chicchi7393.registroapi.Application
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.models.FeedbackDeletePayload
 import me.chicchi7393.registroapi.models.FeedbackEntry
+import me.chicchi7393.registroapi.models.FeedbackGetPayload
 import me.chicchi7393.registroapi.models.FeedbackReplyPayload
 
 fun Routing.feedbackRoute() {
-    route("/feedback") {
-        val daoFeedback = DAOFeedback()
+    val daoFeedback = DAOFeedback()
 
+    route("/feedback") {
         put({
             description = "Opens a feedback"
             request {
@@ -106,6 +108,39 @@ fun Routing.feedbackRoute() {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
             }
         }
+        get({
+            description = "Gets a feedback"
+            request {
+                body<FeedbackGetPayload> {}
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Feedback found"
+                    body<FeedbackEntry>()
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Feedback with given secret not found"
+                    body<String>()
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Internal server errors"
+                    body<String>()
+                }
+            }
+        }) {
+            try {
+                val feedbackGetEntry = call.receive<FeedbackGetPayload>()
+                val result = daoFeedback.feedback(feedbackGetEntry.secret)
+                if (result == null) call.respondText(
+                    "No feedback found",
+                    status = HttpStatusCode.NotFound
+                ) else {
+                    call.respond(HttpStatusCode.OK, result)
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
+            }
+        }
         authenticate("auth-basic") {
             patch({
                 description = "Replies to a feedback"
@@ -138,6 +173,22 @@ fun Routing.feedbackRoute() {
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
                 }
+            }
+        }
+    }
+    route("deleteAllFeedback") {
+        authenticate("auth-basic") {
+            delete({
+                description = "Deletes all feedback"
+                request {}
+                response {
+                    HttpStatusCode.OK to {
+                        description = "All Feedback deleted"
+                    }
+                }
+            }) {
+                val result = daoFeedback.deleteAllFeedback()
+                call.respond(HttpStatusCode.OK)
             }
         }
     }
