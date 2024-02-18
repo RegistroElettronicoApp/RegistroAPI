@@ -148,7 +148,7 @@ fun Routing.feedbackRoute() {
                 }
                 HttpStatusCode.NotFound to {
                     description = "Feedback with given secret not found"
-                    body<String>()
+                    body<List<FeedbackEntry>>()
                 }
                 HttpStatusCode.InternalServerError to {
                     description = "Internal server errors"
@@ -159,9 +159,9 @@ fun Routing.feedbackRoute() {
             try {
                 val feedbackGetEntry = call.receive<FeedbackGetListPayload>()
                 val result = daoFeedback.feedbacks(feedbackGetEntry.secrets)
-                if (result.isEmpty()) call.respondText(
-                    "No feedback found",
-                    status = HttpStatusCode.NotFound
+                if (result.isEmpty()) call.respond(
+                    HttpStatusCode.NotFound,
+                    listOf<FeedbackEntry>()
                 ) else {
                     call.respond(HttpStatusCode.OK, result)
                 }
