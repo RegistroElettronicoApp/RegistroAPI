@@ -26,7 +26,11 @@ object Application {
             configureSerialization()
             DatabaseSingleton.init()
             configureRouting()
-        }
+        }, watchPaths = listOf(
+            "classes",
+            "resources",
+            "resources/templates"
+        )
         )
 
     @JvmStatic

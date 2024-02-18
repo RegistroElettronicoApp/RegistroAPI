@@ -25,7 +25,7 @@
                             <a class="nav-link active" aria-current="page" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="feedback">Feedback</a>
+                            <a class="nav-link" href="feedbackManager">Feedback</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link disabled" aria-disabled="true" href="#">Notifiche</a>

@@ -33,12 +33,12 @@ fun Application.configureRouting() {
                     )
                 )
             }
-            get("/feedback") {
+            get("/feedbackManager") {
                 val daoFeedback = DAOFeedback()
 
                 call.respond(
                     FreeMarkerContent(
-                        "feedback.ftl", mapOf(
+                        "feedbackManager.ftl", mapOf(
                             "loggedUser" to call.principal<UserIdPrincipal>()?.name,
                             "feedbacks" to daoFeedback.allFeedbacks()
                         )

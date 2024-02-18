@@ -33,6 +33,27 @@
                 })
 
             }
+
+            function deleteAllFeedbackDanger() {
+                let res = fetch("/deleteAllFeedback", {
+                    method: "DELETE"
+                })
+                res.then((res) => {
+                    if (res.status === 200) {
+                        var myModalEl = document.getElementById("deleteAllModal");
+                        var modal = bootstrap.Modal.getInstance(myModalEl)
+                        modal.hide();
+                        setTimeout(() => {
+                            location.reload();
+                        }, 500)
+                    } else {
+                        alert("Errore interno: " + res.status)
+                    }
+                }, () => {
+                    alert("Richiesta fallita")
+                })
+            }
+
         </script>
     </head>
     <body>
@@ -68,7 +89,7 @@
         <div class="row">
             <div class="mx-auto col-md-8">
                 <h1 class="text-center">Feedback:</h1>
-                <div class="mx-auto col-md-2">
+                <div class="mx-auto col-md-2 text-center">
                     <#list feedbacks as item>
                         <div class="card justify-content-center" style="width: 100%; margin-bottom:20px!important;">
                             <div class="card-body">
@@ -117,6 +138,36 @@
                             </div>
                         </div>
                     </#list>
+                    <#if feedbacks?size == 0>
+                        <span class="text-center">Nessun feedback</span>
+                    </#if>
+                </div>
+                <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Vuoi davvero eliminare tutti i feedback?</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <span>L'operazione è irreversibile!</span>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi
+                                </button>
+                                <button type="button" class="btn btn-danger"
+                                        onclick="deleteAllFeedbackDanger()">
+                                    Elimina
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="danger-area" class="text-center">
+                    <h2 class="text-center text-danger">Area pericolo</h2>
+                    <a class="btn btn-danger justify-content-center align-content-center" data-bs-toggle="modal"
+                       data-bs-target="#deleteAllModal">Elimina tutti i feedback</a>
                 </div>
             </div>
         </div>
