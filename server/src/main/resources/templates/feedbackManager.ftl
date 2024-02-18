@@ -12,7 +12,7 @@
                 let reply = document.getElementById("textAreaReply-" + id).value
                 let res = fetch("/feedback", {
                     method: "PATCH",
-                    body: '{"id": ' + id + ', reply: ' + reply + '}',
+                    body: '{"id": ' + id + ', reply: "' + reply + '"}',
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -176,7 +176,7 @@
                 crossorigin="anonymous"></script>
         <script>
             for (let cardDateElem of document.getElementsByClassName("card-date-to-edit")) {
-                let unixSeconds = cardDateElem.attributes["data-date"].value.replaceAll(".", "")
+                let unixSeconds = cardDateElem.attributes["data-date"].value.replaceAll(".", "").replaceAll(",", "")
                 const date = new Date(unixSeconds * 1000);
 
                 const day = "0" + date.getDate();
