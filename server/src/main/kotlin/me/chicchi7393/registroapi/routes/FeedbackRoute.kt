@@ -160,7 +160,10 @@ fun Routing.feedbackRoute() {
                     "No feedback found",
                     status = HttpStatusCode.NotFound
                 ) else {
-                    call.respond(HttpStatusCode.OK)
+                    call.respondText(
+                        "",
+                        status = HttpStatusCode.OK
+                    )
                 }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
