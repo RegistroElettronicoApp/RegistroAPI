@@ -74,38 +74,6 @@ fun Routing.feedbackRoute() {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
             }
         }
-        delete({
-            description = "Deletes a feedback"
-            request {
-                body<FeedbackDeletePayload> {}
-            }
-            response {
-                HttpStatusCode.OK to {
-                    description = "Feedback deleted"
-                }
-                HttpStatusCode.NotFound to {
-                    description = "Feedback with given secret not found"
-                    body<String>()
-                }
-                HttpStatusCode.InternalServerError to {
-                    description = "Internal server errors"
-                    body<String>()
-                }
-            }
-        }) {
-            try {
-                val feedbackDeleteEntry = call.receive<FeedbackDeletePayload>()
-                val result = daoFeedback.deleteFeedback(feedbackDeleteEntry.secret)
-                if (!result) call.respondText(
-                    "No feedback found",
-                    status = HttpStatusCode.NotFound
-                ) else {
-                    call.respond(HttpStatusCode.OK)
-                }
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
-            }
-        }
         authenticate("auth-basic") {
             patch({
                 description = "Replies to a feedback"
@@ -162,6 +130,40 @@ fun Routing.feedbackRoute() {
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
                 }
+            }
+        }
+    }
+    route("/deleteFeedback") {
+        post({
+            description = "Deletes a feedback"
+            request {
+                body<FeedbackDeletePayload> {}
+            }
+            response {
+                HttpStatusCode.OK to {
+                    description = "Feedback deleted"
+                }
+                HttpStatusCode.NotFound to {
+                    description = "Feedback with given secret not found"
+                    body<String>()
+                }
+                HttpStatusCode.InternalServerError to {
+                    description = "Internal server errors"
+                    body<String>()
+                }
+            }
+        }) {
+            try {
+                val feedbackDeleteEntry = call.receive<FeedbackDeletePayload>()
+                val result = daoFeedback.deleteFeedback(feedbackDeleteEntry.secret)
+                if (!result) call.respondText(
+                    "No feedback found",
+                    status = HttpStatusCode.NotFound
+                ) else {
+                    call.respond(HttpStatusCode.OK)
+                }
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
             }
         }
     }
