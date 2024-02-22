@@ -1,12 +1,12 @@
 package me.chicchi7393.registroapi.dao
 
-import me.chicchi7393.registroapi.DatabaseSingleton.dbQuery
+import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.models.NotificationEntry
 import me.chicchi7393.registroapi.models.NotificationEntryTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class DAONotifications {
+class DAONotifications(private val db: DatabaseClass) {
     private fun resultRowToNotif(row: ResultRow) = NotificationEntry(
         id = row[NotificationEntryTable.id],
         deviceFcm = row[NotificationEntryTable.deviceFcm],
@@ -15,11 +15,11 @@ class DAONotifications {
         reg = row[NotificationEntryTable.reg]
     )
 
-    suspend fun allNotifs() = dbQuery {
+    suspend fun allNotifs() = db.dbQuery {
         NotificationEntryTable.selectAll().map(::resultRowToNotif)
     }
 
-    suspend fun notif(deviceFcm: String, username: String) = dbQuery {
+    suspend fun notif(deviceFcm: String, username: String) = db.dbQuery {
         NotificationEntryTable
             .select { NotificationEntryTable.username eq username and (NotificationEntryTable.deviceFcm eq deviceFcm) }
             .map(::resultRowToNotif)
@@ -31,7 +31,7 @@ class DAONotifications {
         username: String,
         serverFcm: String,
         reg: Int
-    ) = dbQuery {
+    ) = db.dbQuery {
         val insertStatement = NotificationEntryTable.insert {
             it[NotificationEntryTable.deviceFcm] = deviceFcm
             it[NotificationEntryTable.username] = username
@@ -47,7 +47,7 @@ class DAONotifications {
         username: String,
         serverFcm: String,
         reg: Int
-    ) = dbQuery {
+    ) = db.dbQuery {
         NotificationEntryTable.update({ NotificationEntryTable.id eq id }) {
             it[NotificationEntryTable.deviceFcm] = deviceFcm
             it[NotificationEntryTable.username] = username
@@ -61,7 +61,7 @@ class DAONotifications {
         newDeviceFcm: String,
         username: String,
         reg: Int
-    ) = dbQuery {
+    ) = db.dbQuery {
         NotificationEntryTable.update({ NotificationEntryTable.deviceFcm eq oldDeviceFcm }) {
             it[deviceFcm] = newDeviceFcm
             it[NotificationEntryTable.username] = username
@@ -69,7 +69,7 @@ class DAONotifications {
         } != 0
     }
 
-    suspend fun deleteNotif(deviceFcm: String, username: String) = dbQuery {
+    suspend fun deleteNotif(deviceFcm: String, username: String) = db.dbQuery {
         NotificationEntryTable.deleteWhere { NotificationEntryTable.username eq username and (NotificationEntryTable.deviceFcm eq deviceFcm) } > 0
     }
 }

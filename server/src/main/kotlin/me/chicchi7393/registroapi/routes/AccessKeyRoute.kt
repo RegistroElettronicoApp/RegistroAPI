@@ -4,16 +4,19 @@ import io.github.smiley4.ktorswaggerui.dsl.get
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAOKey
 import me.chicchi7393.registroapi.models.AccessKey
 
-fun Routing.accessKeyRoute() {
+fun Routing.accessKeyRoute(db: DatabaseClass) {
     route("/accessKey") {
-        val daoKey = DAOKey()
+        val daoKey = DAOKey(db)
         get({
+            tags = listOf("accessKey", "public")
             description = "Get an access key's creds"
             request {
                 queryParameter<String>("shareCode") {
@@ -47,36 +50,39 @@ fun Routing.accessKeyRoute() {
                 }
             }
         }
-        post({
-            description = "Create an access key"
-            request {
-                body<AccessKey> {
-                    description = "the access key you have to create"
+        authenticate("auth-basic") {
+            post({
+                tags = listOf("accessKey", "private")
+                description = "Create an access key"
+                request {
+                    body<AccessKey> {
+                        description = "the access key you have to create"
+                    }
                 }
-            }
-            response {
-                HttpStatusCode.Created to {
-                    description = "Created the access key"
-                    body<AccessKey> { description = "the access key you just created" }
+                response {
+                    HttpStatusCode.Created to {
+                        description = "Created the access key"
+                        body<AccessKey> { description = "the access key you just created" }
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Unable to create access key"
+                    }
                 }
-                HttpStatusCode.InternalServerError to {
-                    description = "Unable to create access key"
+            }) {
+                val shareKey = call.receive<AccessKey>()
+                val result = daoKey.addNewKey(
+                    shareKey.schoolCode,
+                    shareKey.username,
+                    shareKey.password,
+                    shareKey.reg,
+                    shareKey.shareCode
+                )
+                if (result == null) call.respondText(
+                    "Unable to create key",
+                    status = HttpStatusCode.InternalServerError
+                ) else {
+                    call.respond(HttpStatusCode.Created, result)
                 }
-            }
-        }) {
-            val shareKey = call.receive<AccessKey>()
-            val result = daoKey.addNewKey(
-                shareKey.schoolCode,
-                shareKey.username,
-                shareKey.password,
-                shareKey.reg,
-                shareKey.shareCode
-            )
-            if (result == null) call.respondText(
-                "Unable to create key",
-                status = HttpStatusCode.InternalServerError
-            ) else {
-                call.respond(HttpStatusCode.Created, result)
             }
         }
     }

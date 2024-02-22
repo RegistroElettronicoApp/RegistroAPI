@@ -1,6 +1,6 @@
 package me.chicchi7393.registroapi.dao
 
-import me.chicchi7393.registroapi.DatabaseSingleton.dbQuery
+import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.models.FeedbackEntry
 import me.chicchi7393.registroapi.models.FeedbackEntryTable
 import org.jetbrains.exposed.sql.*
@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.*
 
-class DAOFeedback {
+class DAOFeedback(private val db: DatabaseClass) {
     private fun resultRowToFeedback(row: ResultRow) = FeedbackEntry(
         id = row[FeedbackEntryTable.id],
         deviceFcm = row[FeedbackEntryTable.deviceFcm],
@@ -20,22 +20,24 @@ class DAOFeedback {
         date = row[FeedbackEntryTable.date].atZone(ZoneId.systemDefault()).toEpochSecond()
     )
 
-    suspend fun allFeedbacks() = dbQuery {
+    suspend fun allFeedbacks() = db.dbQuery {
         FeedbackEntryTable.selectAll().map(::resultRowToFeedback)
     }
 
-    suspend fun feedback(secret: String) = dbQuery {
+    suspend fun feedback(secret: String) = db.dbQuery {
         FeedbackEntryTable
             .select { FeedbackEntryTable.secret eq secret }
             .map(::resultRowToFeedback)
             .singleOrNull()
     }
-    suspend fun feedbacks(secrets: List<String>) = dbQuery {
+
+    suspend fun feedbacks(secrets: List<String>) = db.dbQuery {
         FeedbackEntryTable
             .select { FeedbackEntryTable.secret inList secrets }
             .map(::resultRowToFeedback)
     }
-    suspend fun feedbackById(id: Int) = dbQuery {
+
+    suspend fun feedbackById(id: Int) = db.dbQuery {
         FeedbackEntryTable
             .select { FeedbackEntryTable.id eq id }
             .map(::resultRowToFeedback)
@@ -46,7 +48,7 @@ class DAOFeedback {
         deviceFcm: String,
         name: String,
         description: String
-    ) = dbQuery {
+    ) = db.dbQuery {
         val insertStatement = FeedbackEntryTable.insert {
             it[FeedbackEntryTable.deviceFcm] = deviceFcm
             it[secret] = UUID.randomUUID().toString()
@@ -61,16 +63,17 @@ class DAOFeedback {
     suspend fun replyFeedback(
         id: Int,
         reply: String
-    ) = dbQuery {
+    ) = db.dbQuery {
         FeedbackEntryTable.update({ FeedbackEntryTable.id eq id }) {
             it[FeedbackEntryTable.reply] = reply
         } != 0
     }
 
-    suspend fun deleteFeedback(secret: String) = dbQuery {
+    suspend fun deleteFeedback(secret: String) = db.dbQuery {
         FeedbackEntryTable.deleteWhere { FeedbackEntryTable.secret eq secret } > 0
     }
-    suspend fun deleteAllFeedback() = dbQuery {
+
+    suspend fun deleteAllFeedback() = db.dbQuery {
         FeedbackEntryTable.deleteAll()
     }
 }

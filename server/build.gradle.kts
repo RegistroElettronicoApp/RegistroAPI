@@ -1,7 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     kotlin("plugin.serialization") version "1.9.21"
+    id("io.sentry.jvm.gradle") version "3.12.0"
     application
 }
 
@@ -40,4 +48,15 @@ dependencies {
     implementation("io.ktor:ktor-client-jetty:2.3.7")
     implementation("io.ktor:ktor-server-freemarker:2.3.7")
     implementation("com.google.firebase:firebase-admin:9.2.0")
+}
+
+sentry {
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext = true
+
+    org = "reg"
+    projectName = "registro-api"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }

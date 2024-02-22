@@ -15,14 +15,16 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
 import me.chicchi7393.registroapi.Application
+import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.models.*
 
-fun Routing.feedbackRoute() {
-    val daoFeedback = DAOFeedback()
+fun Routing.feedbackRoute(db: DatabaseClass, dev: Boolean) {
+    val daoFeedback = DAOFeedback(db)
 
     route("/feedback") {
         put({
+            tags = listOf("feedback", "public")
             description = "Opens a feedback"
             request {
                 body<FeedbackEntry> {}
@@ -60,7 +62,7 @@ fun Routing.feedbackRoute() {
                                 <b>Messaggio:</b> ${feedbackEntry.description.escapeHTML()}
                                 <b>ID:</b> ${result.id}
                                 
-                                https://regapi${if (Application.DEVELOPMENT_SERVER) "-dev" else ""}.chicchi7393.xyz
+                                https://regapi${if (dev) "-dev" else ""}.chicchi7393.xyz
                             """.trimIndent()
                             )
                             append("parse_mode", "HTML")
@@ -76,6 +78,7 @@ fun Routing.feedbackRoute() {
         }
         authenticate("auth-basic") {
             patch({
+                tags = listOf("feedback", "private")
                 description = "Replies to a feedback"
                 request {
                     body<FeedbackReplyPayload> {}
@@ -135,6 +138,7 @@ fun Routing.feedbackRoute() {
     }
     route("/deleteFeedback") {
         post({
+            tags = listOf("feedback", "public")
             description = "Deletes a feedback"
             request {
                 body<FeedbackDeletePayload> {}
@@ -172,6 +176,7 @@ fun Routing.feedbackRoute() {
     }
     route("/getFeedback") {
         post({
+            tags = listOf("feedback", "public")
             description = "Gets a feedback"
             request {
                 body<FeedbackGetPayload> {}
@@ -207,6 +212,7 @@ fun Routing.feedbackRoute() {
     }
     route("/getFeedbacks") {
         post({
+            tags = listOf("feedback", "public")
             description = "Gets a list of feedbacks"
             request {
                 body<FeedbackGetListPayload> {}
@@ -244,6 +250,7 @@ fun Routing.feedbackRoute() {
     route("deleteAllFeedback") {
         authenticate("auth-basic") {
             delete({
+                tags = listOf("feedback", "private")
                 description = "Deletes all feedback"
                 request {}
                 response {

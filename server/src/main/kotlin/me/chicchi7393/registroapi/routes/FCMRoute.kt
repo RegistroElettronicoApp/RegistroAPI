@@ -8,16 +8,18 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAONotifications
 import me.chicchi7393.registroapi.models.FCMDeleteReq
 import me.chicchi7393.registroapi.models.FCMModifyReq
 import me.chicchi7393.registroapi.models.NotificationEntry
 
-fun Routing.fcmRoute() {
+fun Routing.fcmRoute(db: DatabaseClass) {
     route("/requestFcm") {
-        val daoNotif = DAONotifications()
+        val daoNotif = DAONotifications(db)
 
         put({
+            tags = listOf("notifications", "public")
             description = "Request a notification token to register with the school registry"
             request {
                 body<NotificationEntry> {}
@@ -49,6 +51,7 @@ fun Routing.fcmRoute() {
             }
         }
         patch({
+            tags = listOf("notifications", "public")
             description = "Modifies a notification entry to change an fcm token"
             request {
                 body<FCMModifyReq> {}
@@ -72,6 +75,7 @@ fun Routing.fcmRoute() {
             call.respond(HttpStatusCode.OK, result)
         }
         delete({
+            tags = listOf("notifications", "public")
             description = "deletes a notification entry"
             request {
                 body<FCMDeleteReq> {}
