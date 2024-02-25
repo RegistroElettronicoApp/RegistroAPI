@@ -1,6 +1,8 @@
 package me.chicchi7393.registroapi.routes
 
+import io.github.smiley4.ktorswaggerui.dsl.delete
 import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.patch
 import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -75,13 +77,74 @@ fun Routing.accessKeyRoute(db: DatabaseClass) {
                     shareKey.username,
                     shareKey.password,
                     shareKey.reg,
-                    shareKey.shareCode
+                    shareKey.shareCode,
+                    shareKey.displayName
                 )
                 if (result == null) call.respondText(
                     "Unable to create key",
                     status = HttpStatusCode.InternalServerError
                 ) else {
                     call.respond(HttpStatusCode.Created, result)
+                }
+            }
+            patch({
+                tags = listOf("accessKey", "private")
+                description = "Edits an access key"
+                request {
+                    body<AccessKey> {
+                        description = "the access key you have to edit"
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Edited the access key"
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Unable to edit access key"
+                    }
+                }
+            }) {
+                val shareKey = call.receive<AccessKey>()
+                val result = daoKey.editKey(
+                    shareKey.id ?: 0,
+                    shareKey.schoolCode,
+                    shareKey.username,
+                    shareKey.password,
+                    shareKey.reg,
+                    shareKey.shareCode,
+                    shareKey.displayName
+                )
+                if (!result) call.respondText(
+                    "Unable to modify key",
+                    status = HttpStatusCode.InternalServerError
+                ) else {
+                    call.respond(HttpStatusCode.OK)
+                }
+            }
+            delete({
+                tags = listOf("accessKey", "private")
+                description = "Deletes an access key"
+                request {
+                    queryParameter<Int>("id") {
+                        description = "the access key you have to create"
+                    }
+                }
+                response {
+                    HttpStatusCode.OK to {
+                        description = "Deleted the access key"
+                    }
+                    HttpStatusCode.InternalServerError to {
+                        description = "Unable to delete access key"
+                    }
+                }
+            }) {
+                val id = call.request.queryParameters["id"]?.toInt()
+                val result = daoKey.deleteKey(id ?: -1)
+                if (!result) call.respondText(
+                    "Unable to create key",
+                    status = HttpStatusCode.InternalServerError
+                ) else {
+                    call.respond(HttpStatusCode.OK)
                 }
             }
         }

@@ -14,6 +14,7 @@ class DAOKey(private val db: DatabaseClass) {
         password = row[AccessKeyTable.password],
         reg = row[AccessKeyTable.reg],
         shareCode = row[AccessKeyTable.shareCode],
+        displayName = row[AccessKeyTable.displayName]
     )
 
     suspend fun allKeys() = db.dbQuery {
@@ -32,7 +33,8 @@ class DAOKey(private val db: DatabaseClass) {
         username: String,
         password: String,
         reg: Int,
-        shareCode: String
+        shareCode: String,
+        displayName: String
     ) = db.dbQuery {
         val insertStatement = AccessKeyTable.insert {
             it[schoolcode] = schoolCode
@@ -40,17 +42,19 @@ class DAOKey(private val db: DatabaseClass) {
             it[AccessKeyTable.password] = password
             it[AccessKeyTable.reg] = reg
             it[AccessKeyTable.shareCode] = shareCode
+            it[AccessKeyTable.displayName] = displayName
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToKey)
     }
 
-    suspend fun editArticle(
+    suspend fun editKey(
         id: Int,
         schoolCode: String,
         username: String,
         password: String,
         reg: Int,
-        shareCode: String
+        shareCode: String,
+        displayName: String
     ) = db.dbQuery {
         AccessKeyTable.update({ AccessKeyTable.id eq id }) {
             it[schoolcode] = schoolcode
@@ -58,10 +62,11 @@ class DAOKey(private val db: DatabaseClass) {
             it[AccessKeyTable.password] = password
             it[AccessKeyTable.reg] = reg
             it[AccessKeyTable.shareCode] = shareCode
+            it[AccessKeyTable.displayName] = displayName
         } != 0
     }
 
-    suspend fun deleteArticle(shareCode: String) = db.dbQuery {
-        AccessKeyTable.deleteWhere { AccessKeyTable.shareCode eq shareCode } > 0
+    suspend fun deleteKey(id: Int) = db.dbQuery {
+        AccessKeyTable.deleteWhere { AccessKeyTable.id eq id } > 0
     }
 }

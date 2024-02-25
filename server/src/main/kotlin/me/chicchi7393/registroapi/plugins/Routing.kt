@@ -12,6 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAOFeedback
+import me.chicchi7393.registroapi.dao.DAOKey
 import me.chicchi7393.registroapi.routes.accessKeyRoute
 import me.chicchi7393.registroapi.routes.debugRoute
 import me.chicchi7393.registroapi.routes.fcmRoute
@@ -51,6 +52,22 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
                             "feedbackManager.ftl", mapOf(
                                 "loggedUser" to call.principal<UserIdPrincipal>()?.name,
                                 "feedbacks" to daoFeedback.allFeedbacks()
+                            )
+                        )
+                    )
+                }
+            }
+
+            route("/accessKeysManager") {
+                get({
+                    tags = listOf("frontend", "private")
+                }) {
+                    val daoKeys = DAOKey(db)
+                    call.respond(
+                        FreeMarkerContent(
+                            "accessKeys.ftl", mapOf(
+                                "loggedUser" to call.principal<UserIdPrincipal>()?.name,
+                                "keys" to daoKeys.allKeys()
                             )
                         )
                     )

@@ -79,7 +79,7 @@
                             <a class="nav-link disabled" aria-disabled="true" href="#">Notifiche</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Chiavi di accesso</a>
+                            <a class="nav-link" href="/accessKeysManager">Chiavi di accesso</a>
                         </li>
                     </ul>
                 </div>
