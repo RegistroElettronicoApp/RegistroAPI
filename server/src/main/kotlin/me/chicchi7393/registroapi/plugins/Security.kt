@@ -24,11 +24,7 @@ fun Application.configureSecurity() {
             userParamName = "username"
             passwordParamName = "password"
             validate { credentials ->
-                if (credentials.password == dotenv["PANEL_KEY"]) {
-                    FrontendCreds(credentials.name, credentials.password)
-                } else {
-                    null
-                }
+                FrontendCreds(credentials.name, credentials.password)
             }
         }
         session<SessionData>("session") {

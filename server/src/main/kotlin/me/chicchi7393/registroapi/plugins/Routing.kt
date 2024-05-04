@@ -12,6 +12,7 @@ import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
+import me.chicchi7393.registroapi.Application.dotenv
 import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.dao.DAOKey
@@ -62,7 +63,7 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
                     tags = listOf("frontend", "public")
                 }) {
                     val creds = call.principal<FrontendCreds>()
-                    if (creds != null) {
+                    if (creds != null && creds.password == dotenv["PANEL_KEY"]) {
                         call.sessions.set(
                             SessionData(
                                 creds.name,
