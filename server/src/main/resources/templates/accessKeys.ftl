@@ -15,6 +15,24 @@
 
             function createKey() {
                 let registroTesto = document.getElementById("selectorButton").innerText
+                let registroId;
+                switch (registroTesto) {
+                    case "Classeviva":
+                        registroId = 0
+                        break;
+                    case "Argo":
+                        registroId = 1
+                        break;
+                    case "Axios":
+                        registroId = 2
+                        break;
+                    case "Nuvola":
+                        registroId = 3
+                        break;
+                    default:
+                        registroId = 4
+                        break;
+                }
                 let res = fetch("accessKey", {
                     method: "POST",
                     body: JSON.stringify({
@@ -22,7 +40,7 @@
                         "schoolCode": document.getElementById("textAreaCodiceNew").value,
                         "username": document.getElementById("textAreaUsernameNew").value,
                         "password": document.getElementById("textAreaPasswordNew").value,
-                        "reg": (registroTesto === "Classeviva") ? 0 : (registroTesto === "Argo" ? 1 : (registroTesto === "Axios" ? 2 : 3)),
+                        "reg": registroId,
                         "shareCode": document.getElementById("textAreaShareCodeNew").value,
                     }),
                     headers: {
@@ -50,12 +68,12 @@
                     method: "PATCH",
                     body: JSON.stringify({
                         "id": id,
-                        "displayName": document.getElementById("textAreaNome").value,
-                        "schoolCode": document.getElementById("textAreaCodice").value,
-                        "username": document.getElementById("textAreaUsername").value,
-                        "password": document.getElementById("textAreaPassword").value,
+                        "displayName": document.getElementById("textAreaNomeKey" + id).value,
+                        "schoolCode": document.getElementById("textAreaCodiceKey" + id).value,
+                        "username": document.getElementById("textAreaUsernameKey" + id).value,
+                        "password": document.getElementById("textAreaPasswordKey" + id).value,
                         "reg": reg,
-                        "shareCode": document.getElementById("textAreaShareCode").value,
+                        "shareCode": document.getElementById("textAreaShareCodeKey" + id).value,
                     }),
                     headers: {
                         'Content-Type': 'application/json'
@@ -63,7 +81,7 @@
                 })
                 res.then((res) => {
                     if (res.status === 200) {
-                        var myModalEl = document.getElementById("editModal");
+                        var myModalEl = document.getElementById("editModalKey" + id);
                         var modal = bootstrap.Modal.getInstance(myModalEl)
                         modal.hide();
                         setTimeout(() => {
@@ -83,7 +101,7 @@
                 })
                 res.then((res) => {
                     if (res.status === 200) {
-                        var myModalEl = document.getElementById("deleteModal");
+                        var myModalEl = document.getElementById("deleteModalKey" + id);
                         var modal = bootstrap.Modal.getInstance(myModalEl)
                         modal.hide();
                         setTimeout(() => {
@@ -140,12 +158,12 @@
                                 <h6 class="card-subtitle mb-2 text-body-secondary">ID: ${item.id}</h6>
                                 <h6 class="card-subtitle mb-2 text-body-secondary">ID registro: ${item.reg}</h6>
                                 <a class="btn btn-primary" data-bs-toggle="modal"
-                                   data-bs-target="#editModal">Modifica</a>
+                                   data-bs-target="#editModalKey${item.id}">Modifica</a>
                                 <a class="btn btn-danger" data-bs-toggle="modal"
-                                   data-bs-target="#deleteModal">Elimina</a>
+                                   data-bs-target="#deleteModalKey${item.id}">Elimina</a>
                             </div>
                         </div>
-                        <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal fade" id="editModalKey${item.id}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -156,29 +174,29 @@
                                     <div class="modal-body" style="margin-top: 20px">
                                         <div class="input-group">
                                             <span class="input-group-text">Nome</span>
-                                            <textarea class="form-control" id="textAreaNome"
+                                            <textarea class="form-control" id="textAreaNomeKey${item.id}"
                                                       aria-label="Inserisci Nome">${item.displayName}</textarea>
                                         </div>
                                         <#if item.reg != 0>
                                             <div class="input-group" style="margin-top: 20px">
                                                 <span class="input-group-text">Codice scuola</span>
-                                                <textarea class="form-control" id="textAreaCodice"
+                                                <textarea class="form-control" id="textAreaCodiceKey${item.id}"
                                                           aria-label="Inserisci Codice scuola">${item.schoolCode}</textarea>
                                             </div>
                                         </#if>
                                         <div class="input-group" style="margin-top: 20px">
                                             <span class="input-group-text">Username</span>
-                                            <textarea class="form-control" id="textAreaUsername"
+                                            <textarea class="form-control" id="textAreaUsernameKey${item.id}"
                                                       aria-label="Inserisci Username">${item.username}</textarea>
                                         </div>
                                         <div class="input-group" style="margin-top: 20px">
                                             <span class="input-group-text">Password</span>
-                                            <textarea class="form-control" id="textAreaPassword"
+                                            <textarea class="form-control" id="textAreaPasswordKey${item.id}"
                                                       aria-label="Inserisci password">${item.password}</textarea>
                                         </div>
                                         <div class="input-group" style="margin-top: 20px">
                                             <span class="input-group-text">Codice di condivisione</span>
-                                            <textarea class="form-control" id="textAreaShareCode"
+                                            <textarea class="form-control" id="textAreaShareCodeKey${item.id}"
                                                       aria-label="Inserisci Codice di condivisione">${item.shareCode}</textarea>
                                         </div>
                                     </div>
@@ -193,7 +211,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal fade" id="deleteModalKey${item.id}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -229,7 +247,7 @@
                                     <div class="input-group">
                                         <span class="input-group-text">Nome</span>
                                         <input class="form-control" id="textAreaNomeNew"
-                                               aria-label="Inserisci Nome"></input>
+                                               aria-label="Inserisci Nome">
                                     </div>
                                     <div class="input-group" style="margin-top: 20px">
                                         <span class="input-group-text">Registro elettronico</span>
@@ -247,6 +265,8 @@
                                                        onclick="onRegistroClick('Axios')">Axios</a></li>
                                                 <li><a class="dropdown-item" href="#"
                                                        onclick="onRegistroClick('Nuvola')">Nuvola</a></li>
+                                                <li><a class="dropdown-item" href="#"
+                                                       onclick="onRegistroClick('Sempreverde')">Sempreverde</a></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -254,22 +274,22 @@
                                          style="margin-top: 20px; display: none">
                                         <span class="input-group-text">Codice scuola</span>
                                         <input class="form-control" id="textAreaCodiceNew"
-                                               aria-label="Inserisci Codice scuola"></input>
+                                               aria-label="Inserisci Codice scuola">
                                     </div>
                                     <div class="input-group" style="margin-top: 20px">
                                         <span class="input-group-text">Username</span>
                                         <input class="form-control" id="textAreaUsernameNew"
-                                               aria-label="Inserisci Username"></input>
+                                               aria-label="Inserisci Username">
                                     </div>
                                     <div class="input-group" style="margin-top: 20px">
                                         <span class="input-group-text">Password</span>
                                         <input type="password" class="form-control" id="textAreaPasswordNew"
-                                               aria-label="Inserisci password"></input>
+                                               aria-label="Inserisci password">
                                     </div>
                                     <div class="input-group" style="margin-top: 20px">
                                         <span class="input-group-text">Codice di condivisione</span>
                                         <input class="form-control" id="textAreaShareCodeNew"
-                                               aria-label="Inserisci Codice di condivisione"></input>
+                                               aria-label="Inserisci Codice di condivisione">
                                     </div>
                                 </div>
                                 <div class="modal-footer">
