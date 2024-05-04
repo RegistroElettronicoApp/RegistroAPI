@@ -76,7 +76,7 @@ object Application {
                 .build()
         )
         Sentry.init { options ->
-            options.dsn = "https://e43059ddae1cc7ed0f0e68139068aa49@sentry.chicchi7393.xyz/6"
+            options.dsn = "https://e43059ddae1cc7ed0f0e68139068aa49@sentry.chicchi7393.xyz/3"
             // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
             // We recommend adjusting this value in production.
             options.tracesSampleRate = 1.0

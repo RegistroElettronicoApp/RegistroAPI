@@ -2,6 +2,7 @@ package me.chicchi7393.registroapi.plugins
 
 import freemarker.cache.ClassTemplateLoader
 import io.github.smiley4.ktorswaggerui.dsl.get
+import io.github.smiley4.ktorswaggerui.dsl.post
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.freemarker.*
@@ -10,9 +11,12 @@ import io.ktor.server.plugins.autohead.*
 import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.sessions.*
 import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.dao.DAOKey
+import me.chicchi7393.registroapi.models.FrontendCreds
+import me.chicchi7393.registroapi.models.SessionData
 import me.chicchi7393.registroapi.routes.accessKeyRoute
 import me.chicchi7393.registroapi.routes.debugRoute
 import me.chicchi7393.registroapi.routes.fcmRoute
@@ -29,19 +33,60 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
         accessKeyRoute(db)
         feedbackRoute(db, dev)
         debugRoute()
-        authenticate("auth-basic") {
-            route("/") {
-                get({
-                    tags = listOf("frontend", "private")
-                }) {
-                    call.respond(
-                        FreeMarkerContent(
-                            "index.ftl",
-                            mapOf("loggedUser" to call.principal<UserIdPrincipal>()?.name)
-                        )
+        suspend fun homePage(call: ApplicationCall, error: Boolean, logout: Boolean) {
+            val session = call.sessions.get<SessionData>()
+            if (session == null) {
+                call.sessions.set(SessionData())
+            }
+            call.respond(
+                FreeMarkerContent(
+                    "index.ftl",
+                    mapOf(
+                        "logged" to (session?.isLogged ?: false),
+                        "name" to (session?.name ?: false),
+                        "error" to error,
+                        "logout" to logout
                     )
+                )
+            )
+        }
+        route("/") {
+            get({
+                tags = listOf("frontend", "public")
+            }) {
+                homePage(call, false, false)
+            }
+
+            authenticate("auth-form") {
+                post({
+                    tags = listOf("frontend", "public")
+                }) {
+                    val creds = call.principal<FrontendCreds>()
+                    if (creds != null) {
+                        call.sessions.set(
+                            SessionData(
+                                creds.name,
+                                creds.password,
+                                isLogged = true
+                            )
+                        )
+                        call.respondRedirect("/")
+                    } else {
+                        homePage(call, true, false)
+                    }
                 }
             }
+        }
+        route("/logout") {
+            post({
+                tags = listOf("frontend", "private")
+            }) {
+                call.sessions.clear<SessionData>()
+                homePage(call, false, true)
+            }
+        }
+        staticResources("/assets", "static_pages.assets") {}
+        authenticate("auth-session") {
             route("/feedbackManager") {
                 get({
                     tags = listOf("frontend", "private")
@@ -74,7 +119,6 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
                 }
             }
             staticResources("/", "static_pages")
-            staticResources("/assets", "static_pages.assets") {}
         }
     }
 }

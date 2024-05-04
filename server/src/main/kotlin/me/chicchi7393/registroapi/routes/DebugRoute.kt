@@ -6,9 +6,9 @@ import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 import io.sentry.Sentry
 
-fun Routing.debugRoute() {
+fun Route.debugRoute() {
     route("/throwDebugError") {
-        authenticate("auth-basic") {
+        authenticate("auth-session") {
             post({
                 tags = listOf("debug", "private")
                 description = "Throws an error, to test Sentry"

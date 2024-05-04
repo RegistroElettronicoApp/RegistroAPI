@@ -2,24 +2,51 @@ package me.chicchi7393.registroapi.plugins
 
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.response.*
 import io.ktor.server.sessions.*
+import io.ktor.util.*
+import me.chicchi7393.registroapi.Application.dotenv
+import me.chicchi7393.registroapi.models.FrontendCreds
+import me.chicchi7393.registroapi.models.SessionData
 
 fun Application.configureSecurity() {
-    data class Session(val count: Int = 0)
     install(Sessions) {
-        cookie<Session>("KTOR_SESSION") {
+        val secretEncryptKey = hex(dotenv["ENC_KEY"])
+        val secretSignKey = hex(dotenv["SIGN_KEY"])
+        cookie<SessionData>("KTOR_SESSION") {
             cookie.extensions["SameSite"] = "lax"
+            cookie.maxAgeInSeconds = 86400
+            transform(SessionTransportTransformerEncrypt(secretEncryptKey, secretSignKey))
         }
     }
     install(Authentication) {
-        basic("auth-basic") {
-            realm = "Access to the '/' path"
+        form("auth-form") {
+            userParamName = "username"
+            passwordParamName = "password"
             validate { credentials ->
-                if (credentials.password == me.chicchi7393.registroapi.Application.dotenv["PANEL_KEY"]) {
-                    UserIdPrincipal(credentials.name)
+                if (credentials.password == dotenv["PANEL_KEY"]) {
+                    FrontendCreds(credentials.name, credentials.password)
                 } else {
                     null
                 }
+            }
+        }
+        session<SessionData>("session") {
+            validate {
+                it
+            }
+        }
+
+        session<SessionData>("auth-session") {
+            validate { session ->
+                if (session.isLogged) {
+                    session
+                } else {
+                    null
+                }
+            }
+            challenge {
+                call.respondRedirect("/#loginNec")
             }
         }
     }

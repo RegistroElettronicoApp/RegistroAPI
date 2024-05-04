@@ -14,7 +14,7 @@ import me.chicchi7393.registroapi.models.FCMDeleteReq
 import me.chicchi7393.registroapi.models.FCMModifyReq
 import me.chicchi7393.registroapi.models.NotificationEntry
 
-fun Routing.fcmRoute(db: DatabaseClass) {
+fun Route.fcmRoute(db: DatabaseClass) {
     route("/requestFcm") {
         val daoNotif = DAONotifications(db)
 

@@ -14,7 +14,7 @@ import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAOKey
 import me.chicchi7393.registroapi.models.AccessKey
 
-fun Routing.accessKeyRoute(db: DatabaseClass) {
+fun Route.accessKeyRoute(db: DatabaseClass) {
     route("/accessKey") {
         val daoKey = DAOKey(db)
         get({
@@ -52,7 +52,7 @@ fun Routing.accessKeyRoute(db: DatabaseClass) {
                 }
             }
         }
-        authenticate("auth-basic") {
+        authenticate("auth-session") {
             post({
                 tags = listOf("accessKey", "private")
                 description = "Create an access key"

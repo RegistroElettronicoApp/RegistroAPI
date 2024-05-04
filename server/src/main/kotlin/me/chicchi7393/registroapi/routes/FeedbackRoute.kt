@@ -19,7 +19,7 @@ import me.chicchi7393.registroapi.DatabaseClass
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.models.*
 
-fun Routing.feedbackRoute(db: DatabaseClass, dev: Boolean) {
+fun Route.feedbackRoute(db: DatabaseClass, dev: Boolean) {
     val daoFeedback = DAOFeedback(db)
 
     route("/feedback") {
@@ -76,7 +76,7 @@ fun Routing.feedbackRoute(db: DatabaseClass, dev: Boolean) {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
             }
         }
-        authenticate("auth-basic") {
+        authenticate("auth-session") {
             patch({
                 tags = listOf("feedback", "private")
                 description = "Replies to a feedback"
@@ -248,7 +248,7 @@ fun Routing.feedbackRoute(db: DatabaseClass, dev: Boolean) {
 
     }
     route("deleteAllFeedback") {
-        authenticate("auth-basic") {
+        authenticate("auth-session") {
             delete({
                 tags = listOf("feedback", "private")
                 description = "Deletes all feedback"
