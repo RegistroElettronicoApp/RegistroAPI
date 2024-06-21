@@ -92,12 +92,16 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
                 get({
                     tags = listOf("frontend", "private")
                 }) {
+                    val session = call.principal<SessionData>()
                     val daoFeedback = DAOFeedback(db)
                     call.respond(
                         FreeMarkerContent(
                             "feedbackManager.ftl", mapOf(
                                 "loggedUser" to call.principal<UserIdPrincipal>()?.name,
-                                "feedbacks" to daoFeedback.allFeedbacks()
+                                "feedbacks" to daoFeedback.allFeedbacks(),
+                                "logged" to (session?.isLogged ?: false),
+                                "name" to (session?.name ?: false),
+                                "error" to false,
                             )
                         )
                     )

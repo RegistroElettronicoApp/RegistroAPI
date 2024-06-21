@@ -12,6 +12,7 @@ import io.ktor.server.netty.*
 import io.sentry.Sentry
 import me.chicchi7393.registroapi.plugins.*
 import org.eclipse.jetty.util.ssl.SslContextFactory
+import java.io.IOException
 import java.io.InputStream
 
 object Application {
@@ -23,8 +24,12 @@ object Application {
         }
     }
     private val embeddedServerDev = let {
-        print("killing previous dev server")
-        ProcessBuilder("fuser", "4473/tcp", "-k").start().waitFor()
+        try {
+            println("killing previous dev server")
+            ProcessBuilder("fuser", "4473/tcp", "-k").start().waitFor()
+        } catch (e: IOException) {
+            println("unable to kill previous server, maybe fuser not found?")
+        }
         embeddedServer(
             Netty, port = 4473, host = "0.0.0.0", module = {
                 configureSecurity()
@@ -44,8 +49,12 @@ object Application {
     }
 
     private val embeddedServerProd = let {
-        print("killing previous prod server")
-        ProcessBuilder("fuser", "4474/tcp", "-k").start().waitFor()
+        try {
+            println("killing previous prod server")
+            ProcessBuilder("fuser", "4474/tcp", "-k").start().waitFor()
+        } catch (e: IOException) {
+            println("unable to kill previous server, maybe fuser not found?")
+        }
         embeddedServer(
             Netty, port = 4474, host = "0.0.0.0", module = {
                 configureSecurity()

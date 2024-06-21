@@ -17,8 +17,9 @@ plugins {
 group = "me.chicchi7393.registroapi"
 version = "1.0.0"
 application {
-    mainClass.set("me.chicchi7393.registroapi.ApplicationKt")
+    mainClass.set("me.chicchi7393.registroapi.Application")
 }
+
 
 dependencies {
     implementation("com.google.protobuf:protobuf-kotlin:3.25.3")

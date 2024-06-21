@@ -1,0 +1,33 @@
+version: '3.1'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "4473:4473"
+      - "4474:4474"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  server-noti:
+    build:
+      context: ./notifications
+    ports:
+      - "4577:4577"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+
+volumes:
+  mongodata:

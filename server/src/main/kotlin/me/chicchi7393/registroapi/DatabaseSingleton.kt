@@ -12,10 +12,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class DatabaseClass(dev: Boolean) {
     init {
         val database = Database.connect(
-            url = "jdbc:h2:file:./build/${if (dev) "dev_db" else "db"};DB_CLOSE_DELAY=-1;AUTO_SERVER=TRUE",
-            user = "root",
-            driver = "org.h2.Driver",
-            password = ""
+            url = "jdbc:mongodb://127.0.0.1/registroapi",
+            driver = "mongodb.jdbc.MongoDriver"
         )
         transaction(database) {
             SchemaUtils.create(AccessKeyTable)
