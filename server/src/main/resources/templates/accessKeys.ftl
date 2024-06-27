@@ -118,7 +118,7 @@
         </script>
     </head>
     <body>
-        <@components.navBar logged=logged ind=3 />
+        <@components.navBar logged=logged ind=3 dev=dev />
         <!-- Login Modal -->
         <#if logged == false>
             <@components.loginModal error=error/>

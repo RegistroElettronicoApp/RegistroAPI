@@ -11,7 +11,7 @@
 
     </head>
     <body>
-        <@components.navBar logged=logged ind=0 />
+        <@components.navBar logged=logged ind=0 dev=dev />
         <!-- Login Modal -->
         <#if logged == false>
             <@components.loginModal error=error/>

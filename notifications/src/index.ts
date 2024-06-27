@@ -1,6 +1,6 @@
 import {PushReceiver} from '@eneris/push-receiver'
-import regInstanceJson from '../config/credentials/regInstance.json' with {type: 'json'};
-import cvvStudentiInstanceJson from '../config/credentials/cvvStudentiInstance.json' with {type: 'json'};
+import {default as regInstanceJson} from './config/credentials/regInstance.json' with {type: 'json'};
+import {default as cvvStudentiInstanceJson} from './config/credentials/cvvStudentiInstance.json' with {type: 'json'};
 // for testing, the school year has finished, and we can't receive school notifications
 const regInstance = new PushReceiver(regInstanceJson)
 

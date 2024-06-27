@@ -46,7 +46,8 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
                         "logged" to (session?.isLogged ?: false),
                         "name" to (session?.name ?: false),
                         "error" to error,
-                        "logout" to logout
+                        "logout" to logout,
+                        "dev" to dev
                     )
                 )
             )
@@ -102,6 +103,7 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
                                 "logged" to (session?.isLogged ?: false),
                                 "name" to (session?.name ?: false),
                                 "error" to false,
+                                "dev" to dev
                             )
                         )
                     )
@@ -112,12 +114,15 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean) {
                 get({
                     tags = listOf("frontend", "private")
                 }) {
+                    val session = call.principal<SessionData>()
                     val daoKeys = DAOKey(db)
                     call.respond(
                         FreeMarkerContent(
                             "accessKeys.ftl", mapOf(
                                 "loggedUser" to call.principal<UserIdPrincipal>()?.name,
-                                "keys" to daoKeys.allKeys()
+                                "keys" to daoKeys.allKeys(),
+                                "logged" to (session?.isLogged ?: false),
+                                "dev" to dev
                             )
                         )
                     )

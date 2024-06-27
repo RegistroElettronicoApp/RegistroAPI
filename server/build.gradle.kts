@@ -58,6 +58,7 @@ dependencies {
     implementation("io.ktor:ktor-client-jetty:2.3.7")
     implementation("io.ktor:ktor-server-freemarker:2.3.7")
     implementation("com.google.firebase:firebase-admin:9.2.0")
+    implementation("org.postgresql:postgresql:42.6.0")
 }
 
 sentry {

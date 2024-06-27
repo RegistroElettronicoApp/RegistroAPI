@@ -12,8 +12,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class DatabaseClass(dev: Boolean) {
     init {
         val database = Database.connect(
-            url = "jdbc:mongodb://127.0.0.1/registroapi",
-            driver = "mongodb.jdbc.MongoDriver"
+            url = "jdbc:postgresql://db:5432/registroapi${if (dev) "_dev" else ""}",
+            user = "postgres",
+            password = "iserniaesplosa"
         )
         transaction(database) {
             SchemaUtils.create(AccessKeyTable)

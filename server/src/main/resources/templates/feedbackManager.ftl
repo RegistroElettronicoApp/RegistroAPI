@@ -58,7 +58,7 @@
         </script>
     </head>
     <body>
-        <@components.navBar logged=logged ind=1 />
+        <@components.navBar logged=logged ind=1 dev=dev />
         <!-- Login Modal -->
         <#if logged == false>
             <@components.loginModal error=error/>
