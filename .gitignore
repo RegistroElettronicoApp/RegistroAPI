@@ -19,7 +19,7 @@ server/src/main/resources/.env
 server/src/main/resources/firebase-service-acc.json
 notifications/node_modules
 notifications/dist
-notifications/src/config/**/*.json
+notifications/config/**/*.json
 server/out/production
 
 conf/.db_user.txt

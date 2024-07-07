@@ -6,23 +6,28 @@ import com.google.firebase.FirebaseOptions
 import io.github.cdimascio.dotenv.Dotenv
 import io.github.cdimascio.dotenv.dotenv
 import io.ktor.client.*
-import io.ktor.client.engine.jetty.*
+import io.ktor.client.engine.java.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.sentry.Sentry
 import me.chicchi7393.registroapi.plugins.*
-import org.eclipse.jetty.util.ssl.SslContextFactory
 import java.io.IOException
 import java.io.InputStream
 
 object Application {
     val dotenv: Dotenv = dotenv()
-    val client = HttpClient(Jetty) {
+    val client = HttpClient(Java) {
         engine {
-            sslContextFactory = SslContextFactory.Client()
-            clientCacheSize = 12
+            pipelining = true
+            protocolVersion = java.net.http.HttpClient.Version.HTTP_2
+        }
+        install(ContentNegotiation) {
+            json()
         }
     }
+
     private val embeddedServerDev = let {
         try {
             println("killing previous dev server")
@@ -37,7 +42,7 @@ object Application {
                 configureMonitoring()
                 configureSerialization()
                 val devDb = DatabaseClass(true)
-                configureRouting(devDb, true)
+                configureRouting(devDb, true, client)
             }, watchPaths = listOf(
                 "classes",
                 "resources",
@@ -62,7 +67,7 @@ object Application {
                 configureMonitoring()
                 configureSerialization()
                 val prodDb = DatabaseClass(false)
-                configureRouting(prodDb, false)
+                configureRouting(prodDb, false, client)
             }, watchPaths = listOf(
                 "classes",
                 "resources",
@@ -72,6 +77,7 @@ object Application {
             println("started prod server")
         }
     }
+
     @JvmStatic
     fun main(args: Array<String>) {
         FirebaseApp.initializeApp(

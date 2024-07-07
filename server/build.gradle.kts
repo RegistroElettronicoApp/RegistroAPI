@@ -55,10 +55,12 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:0.41.1")
     implementation("com.h2database:h2:2.2.224")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-    implementation("io.ktor:ktor-client-jetty:2.3.7")
+    implementation("io.ktor:ktor-client-java:2.3.7")
     implementation("io.ktor:ktor-server-freemarker:2.3.7")
     implementation("com.google.firebase:firebase-admin:9.2.0")
-    implementation("org.postgresql:postgresql:42.6.0")
+    implementation("org.postgresql:postgresql:42.7.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:1.6.2")
+    implementation("io.ktor:ktor-client-content-negotiation:1.6.2")
 }
 
 sentry {

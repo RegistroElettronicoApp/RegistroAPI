@@ -1,27 +1,9 @@
-import {PushReceiver} from '@eneris/push-receiver'
-import {default as regInstanceJson} from './config/credentials/regInstance.json' with {type: 'json'};
-import {default as cvvStudentiInstanceJson} from './config/credentials/cvvStudentiInstance.json' with {type: 'json'};
-// for testing, the school year has finished, and we can't receive school notifications
-const regInstance = new PushReceiver(regInstanceJson)
+import connectInstances from "./notifications/index.js";
+import startServer from "./communications/index.js";
+import Database from "./db/index.js";
 
-const cvvStudentiInstance = new PushReceiver(cvvStudentiInstanceJson)
-
-const stopListeningToCredentials = cvvStudentiInstance.onCredentialsChanged(({oldCredentials, newCredentials}) => {
-    console.log('Client generated new credentials.', newCredentials)
-    // Save them somewhere! And decide if thing are needed to re-subscribe
-})
-
-const stopListeningToNotifications = cvvStudentiInstance.onNotification(notification => {
-    // Do someting with the notification
-    console.log('Notification received', notification)
-})
-
-await regInstance.connect()
-await cvvStudentiInstance.connect()
-
-console.log('connected')
-
-console.log('server created')
-
-stopListeningToCredentials()
-stopListeningToNotifications()
+await Database.connectToDatabase()
+await connectInstances()
+console.log("Connected instances")
+await startServer()
+console.log("Started fastify")
