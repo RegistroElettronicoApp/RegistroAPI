@@ -23,7 +23,8 @@ class Database {
                     min: config.pool.min,
                     acquire: config.pool.acquire,
                     idle: config.pool.idle
-                }
+                },
+                omitNull: true
             })
 
             this.sequelize.addModels([Instance])

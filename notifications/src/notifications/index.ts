@@ -72,7 +72,7 @@ export async function getFcm(phoneFcm: string, regId: number, username: string):
         let newInstanceDb = await InstanceRepository.save(regId, username, [], true, "{}", phoneFcm)
         if (newInstanceDb.pk != undefined) {
             let newInstance = addInstance(newInstanceDb.pk, phoneFcm, regId, [], undefined, true)
-            connectInstance(newInstance, newInstanceDb.pk, (fcm) => {
+            return connectInstance(newInstance, newInstanceDb.pk, (fcm) => {
                 resolve([newInstanceDb.pk, fcm])
             })
         }

@@ -8,7 +8,7 @@ export default class Instance extends Model {
     @Column({
         type: DataType.INTEGER,
         primaryKey: true,
-        field: "id", allowNull: false, autoIncrement: true
+        field: "id", autoIncrement: true
     })
     pk?: number
 
