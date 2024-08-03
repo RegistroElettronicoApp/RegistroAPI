@@ -1,0 +1,8 @@
+FROM node-ubuntu-local
+WORKDIR /app
+
+COPY . /app/
+EXPOSE 4577
+EXPOSE 9229
+
+ENTRYPOINT [ "npx", "tsc", "-p", "tsconfig.dev.json", "-watch", "&&", "node", "--inspect=0.0.0.0", "dist/index.js" ]

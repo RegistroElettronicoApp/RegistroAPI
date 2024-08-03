@@ -20,6 +20,7 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean, client: HttpCl
         fcmRoute(db, client)
         accessKeyRoute(db)
         feedbackRoute(db, dev)
+        changelogRoute(db, dev)
         administrationPageRoute(db, dev)
         debugRoute()
     }

@@ -46,18 +46,21 @@ function addInstance(pk: number, phoneFcm: string, regId: number | undefined, pe
 
 export default async function connectInstances() {
     let instances = await InstanceRepository.retrieveAll()
-
+    console.log(instances)
     instances.map((instance) => {
-        if (instance.phoneFcm != undefined && instance.pk != undefined) {
-            addInstance(instance.pk, instance.phoneFcm, instance.regId, instance.noti_ids, instance.credentials != null ? JSON.parse(instance.credentials) : {}, instance.debug)
+        let instanceData = instance.dataValues
+        console.log("Adding instance: " + instanceData.pk)
+        if (instanceData.phoneFcm != undefined && instanceData.pk != undefined) {
+            addInstance(instanceData.pk, instanceData.phoneFcm, instanceData.regId, instanceData.noti_ids, instanceData.credentials != null ? JSON.parse(instanceData.credentials) : {}, instanceData.debug)
         }
     })
 
     globalInstances.forEach((instance, pk) => {
         connectInstance(instance, pk, () => {
         })
+        console.log('connected instance ' + instance[0])
+
     })
-    console.log('connected instances')
 }
 
 export async function getFcm(phoneFcm: string, regId: number, username: string): Promise<[number | undefined, string | undefined]> {
@@ -69,11 +72,13 @@ export async function getFcm(phoneFcm: string, regId: number, username: string):
         })
         if (alreadyPresent != undefined) resolve([alreadyPresent[0], alreadyPresent[1]])
         if (regId == undefined) resolve([undefined, undefined])
+        console.log("Adding new instanmc")
         let newInstanceDb = await InstanceRepository.save(regId, username, [], true, "{}", phoneFcm)
-        if (newInstanceDb.pk != undefined) {
-            let newInstance = addInstance(newInstanceDb.pk, phoneFcm, regId, [], undefined, true)
-            return connectInstance(newInstance, newInstanceDb.pk, (fcm) => {
-                resolve([newInstanceDb.pk, fcm])
+        let newInstanceValues = newInstanceDb.dataValues
+        if (newInstanceValues.pk != undefined) {
+            let newInstance = addInstance(newInstanceValues.pk, phoneFcm, regId, [], undefined, true)
+            return connectInstance(newInstance, newInstanceValues.pk, (fcm) => {
+                resolve([newInstanceValues.pk, fcm])
             })
         }
     })

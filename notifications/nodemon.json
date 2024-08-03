@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": "ts",
+  "ignore": [
+    "src/**/*.spec.ts"
+  ],
+  "exec": "tsc -p tsconfig.dev.json -watch | node --inspect=0.0.0.0 dist/index.js",
+  "cwd": "dist"
+}

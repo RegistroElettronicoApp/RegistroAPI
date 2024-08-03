@@ -40,8 +40,10 @@ services:
   server-noti:
     build:
       context: ./notifications
+      dockerfile: Dockerfile.dev
     ports:
       - "4577:4577"
+      - "9229:9229"
     depends_on:
       db:
         condition: service_healthy
