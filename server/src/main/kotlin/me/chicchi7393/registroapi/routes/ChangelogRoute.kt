@@ -19,89 +19,91 @@ import me.chicchi7393.registroapi.models.FeedbackEntry
 fun Route.changelogRoute(db: DatabaseClass, dev: Boolean) {
     val daoChangelog = DAOChangelog(db)
 
-    route("/changelog") {
         authenticate("auth-session") {
-            put({
-                tags = listOf("changelog", "private")
-                description = "Inserts a changelog"
-                request {
-                    body<ChangelogEntry> {}
+            route("/changelog") {
+
+                put({
+                    tags = listOf("changelog", "private")
+                    description = "Inserts a changelog"
+                    request {
+                        body<ChangelogEntry> {}
+                    }
+                    response {
+                        HttpStatusCode.Created to {
+                            description = "Changelog inserted"
+                            body<FeedbackEntry>()
+                        }
+                        HttpStatusCode.BadRequest to {
+                            description = "Field errors"
+                        }
+                        HttpStatusCode.InternalServerError to {
+                            description = "Internal server errors"
+                            body<String>()
+                        }
+                    }
+                }) {
+                    try {
+                        val changelogEntry = call.receive<ChangelogEntry>()
+                        val result =
+                            daoChangelog.addChangelog(
+                                changelogEntry.versionName,
+                                changelogEntry.buildNumber,
+                                changelogEntry.changelogHtml,
+                                changelogEntry.availableForUpdate
+                            )
+                        if (result == null) call.respondText(
+                            "Unable to create changelog",
+                            status = HttpStatusCode.BadRequest
+                        ) else {
+                            call.respond(HttpStatusCode.Created, result)
+                        }
+                    } catch (e: Exception) {
+                        call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
+                    }
                 }
-                response {
-                    HttpStatusCode.Created to {
-                        description = "Changelog inserted"
-                        body<FeedbackEntry>()
+
+                patch({
+                    tags = listOf("feedback", "private")
+                    description = "Modifies a changelog"
+                    request {
+                        body<ChangelogEntry> {}
                     }
-                    HttpStatusCode.BadRequest to {
-                        description = "Field errors"
+                    response {
+                        HttpStatusCode.OK to {
+                            description = "Changelog modified"
+                        }
+                        HttpStatusCode.NotFound to {
+                            description = "Changelog with given id not found"
+                            body<String>()
+                        }
+                        HttpStatusCode.InternalServerError to {
+                            description = "Internal server errors"
+                            body<String>()
+                        }
                     }
-                    HttpStatusCode.InternalServerError to {
-                        description = "Internal server errors"
-                        body<String>()
-                    }
-                }
-            }) {
-                try {
-                    val changelogEntry = call.receive<ChangelogEntry>()
-                    val result =
-                        daoChangelog.addChangelog(
+                }) {
+                    try {
+                        val changelogEntry = call.receive<ChangelogEntry>()
+                        if (changelogEntry.id == null) call.respondText(
+                            "No feedback found",
+                            status = HttpStatusCode.NotFound
+                        )
+                        val result = daoChangelog.editChangelog(
+                            changelogEntry.id!!,
                             changelogEntry.versionName,
                             changelogEntry.buildNumber,
                             changelogEntry.changelogHtml,
                             changelogEntry.availableForUpdate
                         )
-                    if (result == null) call.respondText(
-                        "Unable to create changelog",
-                        status = HttpStatusCode.BadRequest
-                    ) else {
-                        call.respond(HttpStatusCode.Created, result)
+                        if (!result) call.respondText(
+                            "No changelog found",
+                            status = HttpStatusCode.NotFound
+                        ) else {
+                            call.respond(HttpStatusCode.OK)
+                        }
+                    } catch (e: Exception) {
+                        call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
                     }
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
-                }
-            }
-
-            patch({
-                tags = listOf("feedback", "private")
-                description = "Modifies a changelog"
-                request {
-                    body<ChangelogEntry> {}
-                }
-                response {
-                    HttpStatusCode.OK to {
-                        description = "Changelog modified"
-                    }
-                    HttpStatusCode.NotFound to {
-                        description = "Changelog with given id not found"
-                        body<String>()
-                    }
-                    HttpStatusCode.InternalServerError to {
-                        description = "Internal server errors"
-                        body<String>()
-                    }
-                }
-            }) {
-                try {
-                    val changelogEntry = call.receive<ChangelogEntry>()
-                    if (changelogEntry.id == null) call.respondText(
-                        "No feedback found",
-                        status = HttpStatusCode.NotFound
-                    )
-                    val result = daoChangelog.editChangelog(
-                        changelogEntry.id!!,
-                        changelogEntry.versionName,
-                        changelogEntry.buildNumber,
-                        changelogEntry.changelogHtml,
-                        changelogEntry.availableForUpdate
-                    )
-                    if (!result) call.respondText(
-                        "No changelog found",
-                        status = HttpStatusCode.NotFound
-                    ) else {
-                        call.respond(HttpStatusCode.OK)
-                    }
-                } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
                 }
             }
             route("/deleteChangelog") {
@@ -144,7 +146,6 @@ fun Route.changelogRoute(db: DatabaseClass, dev: Boolean) {
             }
         }
 
-    }
 
     route("/getChangelog") {
         post({

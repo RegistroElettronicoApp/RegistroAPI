@@ -62,6 +62,7 @@
                     <@navItem disabled=false href="feedbackManager" title="Feedback" index=ind exp=1/>
                     <@navItem disabled=true href="#" title="Notifiche" index=ind exp=2/>
                     <@navItem disabled=false href="accessKeysManager" title="Chiavi di accesso" index=ind exp=3/>
+                    <@navItem disabled=false href="changelogManager" title="Changelog" index=ind exp=4/>
                 </ul>
             </div>
             <div id="navbarLogin">

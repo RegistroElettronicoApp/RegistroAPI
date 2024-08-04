@@ -11,6 +11,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import me.chicchi7393.registroapi.Application.dotenv
 import me.chicchi7393.registroapi.DatabaseClass
+import me.chicchi7393.registroapi.dao.DAOChangelog
 import me.chicchi7393.registroapi.dao.DAOFeedback
 import me.chicchi7393.registroapi.dao.DAOKey
 import me.chicchi7393.registroapi.models.FrontendCreds
@@ -44,7 +45,7 @@ fun Route.administrationPageRoute(db: DatabaseClass, dev: Boolean) {
 
         authenticate("auth-form") {
             post({
-                tags = listOf("frontend", "public")
+                tags = listOf("frontend", "private")
             }) {
                 val creds = call.principal<FrontendCreds>()
                 if (creds != null && creds.password == dotenv["PANEL_KEY"]) {
@@ -111,6 +112,26 @@ fun Route.administrationPageRoute(db: DatabaseClass, dev: Boolean) {
                 )
             }
         }
+
+        route("/changelogManager") {
+            get({
+                tags = listOf("frontend", "private")
+            }) {
+                val session = call.principal<SessionData>()
+                val daoKeys = DAOChangelog(db)
+                call.respond(
+                    FreeMarkerContent(
+                        "changelogManager.ftl", mapOf(
+                            "loggedUser" to call.principal<UserIdPrincipal>()?.name,
+                            "changelogs" to daoKeys.allChangelogs(),
+                            "logged" to (session?.isLogged ?: false),
+                            "dev" to dev
+                        )
+                    )
+                )
+            }
+        }
+
         staticResources("/", "static_pages")
     }
 }

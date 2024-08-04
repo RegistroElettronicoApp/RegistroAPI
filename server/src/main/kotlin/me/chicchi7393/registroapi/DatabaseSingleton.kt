@@ -2,6 +2,7 @@ package me.chicchi7393.registroapi
 
 import kotlinx.coroutines.Dispatchers
 import me.chicchi7393.registroapi.models.AccessKeyTable
+import me.chicchi7393.registroapi.models.ChangelogEntryTable
 import me.chicchi7393.registroapi.models.FeedbackEntryTable
 import me.chicchi7393.registroapi.models.NotificationEntryTable
 import org.jetbrains.exposed.sql.Database
@@ -20,6 +21,7 @@ class DatabaseClass(dev: Boolean) {
             SchemaUtils.create(AccessKeyTable)
             SchemaUtils.create(NotificationEntryTable)
             SchemaUtils.create(FeedbackEntryTable)
+            SchemaUtils.create(ChangelogEntryTable)
         }
     }
 
