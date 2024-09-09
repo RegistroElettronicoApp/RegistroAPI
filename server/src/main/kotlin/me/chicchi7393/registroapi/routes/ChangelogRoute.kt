@@ -21,7 +21,6 @@ fun Route.changelogRoute(db: DatabaseClass, dev: Boolean) {
 
         authenticate("auth-session") {
             route("/changelog") {
-
                 put({
                     tags = listOf("changelog", "private")
                     description = "Inserts a changelog"
@@ -171,12 +170,21 @@ fun Route.changelogRoute(db: DatabaseClass, dev: Boolean) {
         }) {
             try {
                 val changelogGetEntry = call.receive<ChangelogGetPayload>()
-                val result = daoChangelog.changelog(changelogGetEntry.build)
-                if (result == null) call.respondText(
+                val changelogs = daoChangelog.allChangelogs()
+                val changelogBuild = changelogs
+                    .map {
+                        it.id ?: 0
+                    }
+                    .filter { it <= changelogGetEntry.build }
+                    .minByOrNull { changelogGetEntry.build - it }
+                val changelog = changelogs
+                    .firstOrNull { it.id == changelogBuild }
+
+                if (changelog == null) call.respondText(
                     "No changelog found",
                     status = HttpStatusCode.NotFound
                 ) else {
-                    call.respond(HttpStatusCode.OK, result)
+                    call.respond(HttpStatusCode.OK, changelog)
                 }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.InternalServerError, "An error occured: ${e.message}")
