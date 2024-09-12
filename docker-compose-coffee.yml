@@ -1,0 +1,45 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    shm_size: 512mb
+    user: postgres
+    volumes:
+      - gresdata:/var/lib/postgresql/data
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_USER=postgres
+      - PGUSER=postgres
+      - POSTGRES_PASSWORD=iserniaesplosa
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./server
+
+    ports:
+      - "34373:4473"
+      - "34374:4474"
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  server-noti:
+    build:
+      context: ./notifications
+    ports:
+      - "4577:4577"
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+volumes:
+  gresdata:
