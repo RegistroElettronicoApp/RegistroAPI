@@ -2,6 +2,7 @@
 
 import {prisma} from "../../../lib/prisma";
 import {messaging} from "../../../lib/firebase"
+import {AddFeedback} from "@/app/schemas/feedback/AddFeedbackPayload";
 export async function getFeedbacks() {
   return prisma.feedbackentry.findMany({})
 }
@@ -31,4 +32,16 @@ export async function replyFeedback(id: number, reply: string) {
     }
   )
   return true
+}
+
+export async function addFeedback(feedbackPayload: AddFeedback) {
+  return prisma.feedbackentry.create({
+    data: {
+      devicefcm: feedbackPayload.deviceFcm,
+      name: feedbackPayload.name,
+      description: feedbackPayload.description,
+      reply: "",
+      secret: crypto.randomUUID()
+    }
+  });
 }
