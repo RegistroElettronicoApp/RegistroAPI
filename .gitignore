@@ -24,3 +24,5 @@ server/out/production
 
 conf/.db_user.txt
 conf/.db_pass.txt
+/node_modules/.package-lock.json
+/node_modules/**
