@@ -26,6 +26,10 @@ services:
     ports:
       - "4473:4473"
       - "4474:4474"
+
+    volumes:
+      - "./recaps:./app/recaps"
+
     depends_on:
       db:
         condition: service_healthy
