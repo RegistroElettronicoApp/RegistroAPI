@@ -11,6 +11,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.name
 
+
 fun Route.recapRoute(dev: Boolean) {
     route("/recap") {
         get({
@@ -38,7 +39,10 @@ fun Route.recapRoute(dev: Boolean) {
             }
         }) {
             try {
-                val language = call.request.acceptLanguage()
+                val languages = call.request.acceptLanguage()
+                val parsedLangs = languages?.split(";")?.mapNotNull { lang ->
+                    lang.split(",").getOrNull(1)
+                }?.filter { !it.contains("_") }?.plus("en") ?: listOf("en")
 
                 val files = Path("./recaps").listDirectoryEntries()
                 val validRecaps = files.filter {
@@ -50,23 +54,20 @@ fun Route.recapRoute(dev: Boolean) {
                     status = HttpStatusCode.NotFound
                 )
 
-                val recap = validRecaps.firstOrNull { file ->
-                    language?.let {
-                        file.fileName.name.contains(it)
-                    } ?: false
-                } ?: files.firstOrNull { file ->
-                    file.fileName.name.contains("en")
+                val recapLang = parsedLangs.firstOrNull { lang ->
+                    validRecaps.any { file -> file.fileName.name.contains(lang) }
                 }
 
-                if (recap == null) call.respondText(
+                if (recapLang == null) call.respondText(
                     "No current, valid recap found",
                     status = HttpStatusCode.NotFound
                 ) else {
+                    val recapFile = validRecaps.first { file -> file.fileName.name.contains(recapLang) }
                     call.respondOutputStream(
                         contentType = ContentType.Application.Json,
                         status = HttpStatusCode.OK,
                         producer = {
-                            Files.copy(recap, this)
+                            Files.copy(recapFile, this)
                         }
                     )
                 }
