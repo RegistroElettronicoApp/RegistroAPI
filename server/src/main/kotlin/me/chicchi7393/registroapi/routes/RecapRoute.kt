@@ -42,7 +42,7 @@ fun Route.recapRoute(dev: Boolean) {
 
                 val files = Path("./recaps").listDirectoryEntries()
                 val validRecaps = files.filter {
-                    !it.fileName.name.contains(".disabled")
+                    !it.fileName.name.contains(".disabled") && (if (!dev) true else it.fileName.name.contains("dev"))
                 }
 
                 if (validRecaps.isEmpty()) call.respondText(

@@ -22,6 +22,7 @@ fun Application.configureRouting(db: DatabaseClass, dev: Boolean, client: HttpCl
         feedbackRoute(db, dev)
         changelogRoute(db, dev)
         administrationPageRoute(db, dev)
+        recapRoute(dev)
         debugRoute()
     }
 }
