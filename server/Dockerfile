@@ -1,4 +1,4 @@
-FROM openjdk:21
+FROM amazoncorretto:21
 LABEL authors="chri"
 WORKDIR /app
 

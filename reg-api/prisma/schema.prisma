@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model accesskey {
+  id          Int    @id @default(autoincrement())
+  displayName String @db.VarChar(128)
+  schoolcode  String @db.VarChar(128)
+  username    String @db.VarChar(128)
+  password    String @db.VarChar(128)
+  reg         Int
+  code        String @db.VarChar(128)
+}
+
+model changelogentry {
+  id                 Int     @id @default(autoincrement())
+  versionName        String  @db.VarChar(64)
+  devicefcm          Int
+  changelogHtml      String  @db.VarChar(8096)
+  availableForUpdate Boolean
+}
+
+model feedbackentry {
+  id          Int      @id @default(autoincrement())
+  secret      String   @db.VarChar(64)
+  devicefcm   String   @db.VarChar(256)
+  name        String   @db.VarChar(128)
+  description String   @db.VarChar(2000)
+  reply       String   @db.VarChar(2000)
+  date        DateTime @default(now()) @db.Timestamp(6)
+}
+
+model notificationentry {
+  id        Int    @id @default(autoincrement())
+  devicefcm String @db.VarChar(128)
+  username  String @db.VarChar(128)
+  serverfcm String @db.VarChar(128)
+  reg       Int
+}
