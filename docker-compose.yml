@@ -28,7 +28,7 @@ services:
       - "4474:4474"
 
     volumes:
-      - "./recaps:./app/recaps"
+      - "./recaps:/app/recaps"
 
     depends_on:
       db:
